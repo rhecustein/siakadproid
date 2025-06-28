@@ -61,12 +61,11 @@ class User extends Authenticatable
 
     public function parent()
     {
-        return $this->hasOne(ParentModel::class); // Sesuaikan nama model jika bukan "ParentModel"
+        return $this->hasOne(StudentParent::class, 'user_id', 'id');
     }
-
     public function wallet()
     {
-        return $this->hasOne(Wallet::class, 'owner_id')->where('owner_type', self::class);
+        return $this->hasOne(Wallet::class, 'user_id', 'id');
     }
 
     public function canteens()
@@ -81,4 +80,18 @@ class User extends Authenticatable
         return $this->hasMany(FingerprintTemplate::class);
     }
 
+    public function conversations()
+    {
+        return $this->hasMany(Conversation::class);
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
+    }
+
+    public function teacher()
+    {
+        return $this->hasOne(Teacher::class);
+    }
 }

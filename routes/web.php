@@ -237,9 +237,23 @@ use App\Http\Controllers\Core\{
     AttendanceRecapController,
     AttendanceScheduleController,
     FingerprintLogController,
+    AiController,
 };
 
 Route::prefix('core')->name('core.')->group(function () {
+
+    // AI Module Routes
+    Route::prefix('ai')->name('ai.')->group(function () {
+        Route::get('/', [AiController::class, 'index'])->name('index');
+        Route::post('/chat', [AiController::class, 'chat'])->name('chat');
+        Route::post('/upload-document', [AiController::class, 'uploadDocument'])->name('upload.document');
+        Route::post('/generate-content', [AiController::class, 'generateContent'])->name('generate.content');
+        Route::post('/generate-visualization', [AiController::class, 'generateVisualization'])->name('generate.visualization');
+        Route::post('/query-database', [AiController::class, 'queryDatabase'])->name('query.database');
+        // Future feature routes can be added here
+        Route::post('/future-feature', [AiController::class, 'futureFeatureExample'])->name('future.feature');
+    });
+
     Route::resource('roles', RolesController::class);
     Route::resource('users', UsersController::class);
      // Tambah sidik jari
@@ -534,5 +548,9 @@ Route::post('/update-fingerprint', [AttendanceApiController::class, 'update'])
     ->withoutMiddleware([VerifyCsrfToken::class]);
 
 Route::get('/test-users', [AttendanceApiController::class, 'getAllUsers']);
+
+
+
+
 require __DIR__.'/auth.php';
 

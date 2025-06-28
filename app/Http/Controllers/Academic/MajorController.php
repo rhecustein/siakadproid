@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Academic;
 
 use App\Http\Controllers\Controller;
 use App\Models\Major;
-use App\Models\Level;
-use App\Models\School;
+use App\Models\Level; // Pastikan Level diimport
+use App\Models\School; // Pastikan School diimport
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -17,17 +17,19 @@ class MajorController extends Controller
             ->when($request->search, function ($query) use ($request) {
                 $query->where(function ($q) use ($request) {
                     $q->where('name', 'like', '%' . $request->search . '%')
-                    ->orWhere('slug', 'like', '%' . $request->search . '%')
-                    ->orWhere('code', 'like', '%' . $request->search . '%');
+                      ->orWhere('slug', 'like', '%' . $request->search . '%')
+                      ->orWhere('code', 'like', '%' . $request->search . '%');
                 });
             })
             ->when($request->type, fn ($q) => $q->where('type', $request->type))
             ->when($request->status, fn ($q) => $q->where('is_active', $request->status === 'active'))
+            // Menambahkan filter berdasarkan level_id dan school_id
             ->when($request->level_id, fn ($q) => $q->where('level_id', $request->level_id))
             ->when($request->school_id, fn ($q) => $q->where('school_id', $request->school_id))
             ->orderBy('order')
-            ->get();
+            ->paginate(10); // Menggunakan paginate untuk pagination
 
+        // Ambil semua data levels dan schools untuk dropdown filter
         $levels = Level::all();
         $schools = School::all();
 
@@ -49,7 +51,10 @@ class MajorController extends Controller
             'slug' => 'nullable|string|unique:majors,slug',
             'code' => 'nullable|string|max:20',
             'description' => 'nullable|string',
-            'type' => 'required|in:academic,vocational,religious,special',
+            // Perhatikan tipe jurusan yang tersedia, sesuaikan dengan kebutuhan Anda
+            // 'academic', 'vocational', 'religious', 'special'
+            // Jika di UI hanya ada "umum" dan "kejuruan", pastikan ini konsisten.
+            'type' => 'required|in:umum,kejuruan,academic,vocational,religious,special',
             'level_id' => 'nullable|exists:levels,id',
             'school_id' => 'nullable|exists:schools,id',
             'order' => 'nullable|integer|min:0',
@@ -68,7 +73,8 @@ class MajorController extends Controller
             'is_active' => true,
         ]);
 
-        return redirect()->route('master.majors.index')->with('success', 'Major added.');
+        // Mengubah redirect ke rute yang benar: academic.majors.index
+        return redirect()->route('academic.majors.index')->with('success', 'Jurusan berhasil ditambahkan.');
     }
 
     public function edit(Major $major)
@@ -86,7 +92,7 @@ class MajorController extends Controller
             'slug' => 'nullable|string|unique:majors,slug,' . $major->id,
             'code' => 'nullable|string|max:20',
             'description' => 'nullable|string',
-            'type' => 'required|in:academic,vocational,religious,special',
+            'type' => 'required|in:umum,kejuruan,academic,vocational,religious,special', // Sesuaikan
             'level_id' => 'nullable|exists:levels,id',
             'school_id' => 'nullable|exists:schools,id',
             'order' => 'nullable|integer|min:0',
@@ -103,12 +109,14 @@ class MajorController extends Controller
             'order' => $request->order ?? 0,
         ]);
 
-        return redirect()->route('master.majors.index')->with('success', 'Major updated.');
+        // Mengubah redirect ke rute yang benar: academic.majors.index
+        return redirect()->route('academic.majors.index')->with('success', 'Jurusan berhasil diperbarui.');
     }
 
     public function destroy(Major $major)
     {
         $major->delete();
-        return redirect()->route('master.majors.index')->with('success', 'Major deleted.');
+        // Mengubah redirect ke rute yang benar: academic.majors.index
+        return redirect()->route('academic.majors.index')->with('success', 'Jurusan berhasil dihapus.');
     }
 }

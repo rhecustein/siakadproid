@@ -29,4 +29,11 @@ class StudentParent extends Model
     {
         return $this->morphOne(Wallet::class, 'owner');
     }
+
+    public function children()
+    {
+        return $this->hasMany(Student::class, 'parent_id', 'id');
+        // Atau jika 'user_id' di tabel students mengacu ke 'user_id' di student_parents:
+        // return $this->hasMany(Student::class, 'user_id', 'user_id');
+    }
 }

@@ -170,12 +170,13 @@ class RoomSeeder extends Seeder
         foreach (range(1, 35) as $i) {
             $room = Room::firstOrCreate([
                 'name' => "Ruang $i",
-                'school_id' => $sdSchool->id,
+                'school_id' => 1,
             ]);
 
             Classroom::firstOrCreate([
                 'name' => "Kelas $i",
-                'room' => $room->name,
+                'room_id' => 1,
+                'room_dsc' => "Ruang $i",
             ], [
                 'uuid' => Str::uuid(),
                 'level_id' => $levelSMP->id,

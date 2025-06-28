@@ -307,7 +307,7 @@
         <div id="aiChatBubble" class="absolute bottom-full mb-2 right-0 bg-green-100 text-green-700 border border-green-300 rounded-md shadow-md p-2 text-sm opacity-0 invisible">
             </div>
 
-        <a href=""
+        <a href="{{ route('core.ai.index') }}"
            id="aiChatButton"
            class="bg-green-400 text-white w-24 h-24 rounded-full shadow-lg ai-button-shape-transform {{-- Tambahkan class untuk shape transform --}}
                   hover:bg-green-500 transition-all duration-300 transform hover:scale-110 hover:shadow-xl

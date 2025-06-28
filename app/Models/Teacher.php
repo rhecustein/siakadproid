@@ -77,5 +77,17 @@ class Teacher extends Model
     {
         return $this->hasManyThrough(Subject::class, ClassroomSubject::class, 'teacher_id', 'id', 'id', 'subject_id');
     }
+    
+     public function currentHomeroomAssignment()
+    {
+        // Asumsi ada kolom 'academic_year_id' dan Anda bisa mendapatkan tahun ajaran aktif
+        // Anda perlu menyesuaikan logika untuk menentukan "saat ini"
+        $currentAcademicYearId = AcademicYear::where('is_active', true)->value('id'); // Asumsi ada tahun ajaran aktif
 
+        return $this->hasOne(HomeroomAssignment::class, 'teacher_id')
+                    ->where('is_active', true) // Hanya yang aktif
+                    ->when($currentAcademicYearId, function ($query) use ($currentAcademicYearId) {
+                        $query->where('academic_year_id', $currentAcademicYearId); // Filter berdasarkan tahun ajaran aktif
+                    });
+    }
 }
