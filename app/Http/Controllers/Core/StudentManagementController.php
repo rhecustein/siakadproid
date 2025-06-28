@@ -17,24 +17,17 @@ use Illuminate\Validation\Rule; // Import Rule untuk validasi unik kondisional
 
 class StudentManagementController extends Controller
 {
-    public function index(Request $request)
+   public function index(Request $request)
     {
-        // Mendapatkan ID tahun ajaran aktif saat ini
         $currentAcademicYearId = AcademicYear::where('is_active', true)->value('id');
 
         $students = Student::with([
             'user',
             'school',
-            'grade', // Ini mungkin adalah grade_level_id, tergantung setup Anda
+            'grade',
             'parent',
-            // Eager load relasi currentClassroomAssignment (jika ada)
-            'currentClassroom' => function($query) use ($currentAcademicYearId) {
-                // Asumsi currentClassroom adalah penugasan kelas aktif siswa untuk tahun ajaran aktif
-                $query->whereHas('academicYear', function($q) use ($currentAcademicYearId) {
-                    $q->where('id', $currentAcademicYearId);
-                })
-                ->with('level'); // Load juga level dari kelas jika diperlukan di tampilan
-            }
+            'currentClassroomAssignment.classroom.level',
+            'currentClassroomAssignment.academicYear'
         ])
         ->when($request->search, function ($query) use ($request) {
             $query->where(function ($q) use ($request) {
@@ -43,9 +36,13 @@ class StudentManagementController extends Controller
                   ->orWhere('nisn', 'like', '%' . $request->search . '%');
             });
         })
-        // Menggunakan pemanggilan biasa untuk closure
-        ->when($request->grade_id, function ($q) use ($request) {
-            $q->where('grade_id', $request->grade_id);
+        ->when($request->grade_id, function ($q) use ($request, $currentAcademicYearId) {
+            $q->whereHas('currentClassroomAssignment.classroom', function($queryClassroom) use ($request) {
+                $queryClassroom->where('grade_id', $request->grade_id);
+            });
+            $q->whereHas('currentClassroomAssignment', function($queryAssignment) use ($currentAcademicYearId) {
+                 $queryAssignment->where('academic_year_id', $currentAcademicYearId);
+            });
         })
         ->when($request->gender, function ($q) use ($request) {
             $q->where('gender', $request->gender);
@@ -56,37 +53,35 @@ class StudentManagementController extends Controller
         ->orderBy('name')
         ->paginate(15);
 
-        // Menghitung data untuk count cards
         $totalStudents = Student::count();
         $activeStudents = Student::where('student_status', 'aktif')->count();
         $maleStudents = Student::where('gender', 'L')->count();
         $femaleStudents = Student::where('gender', 'P')->count();
 
-        // Ambil semua data master untuk filter dropdown
-        $grades = GradeLevel::all(); // Untuk dropdown "Semua Kelas"
+        $schools = School::all();
+        $grades = GradeLevel::all();
 
-        return view('students.index', compact('students', 'totalStudents', 'activeStudents', 'maleStudents', 'femaleStudents', 'grades'));
+        return view('students.index', compact('students', 'totalStudents', 'activeStudents', 'maleStudents', 'femaleStudents', 'grades', 'schools'));
     }
 
     public function create()
     {
         $schools = School::all();
-        // Ambil user yang belum terhubung dengan StudentParent (jika Anda punya form untuk menghubungkan user_id di student create)
-        $availableUsers = User::doesntHave('student')->get(); // Asumsi relasi student() di User model
-
+        $availableUsers = User::doesntHave('student')->get(); // Variabel ini yang sudah ada
         $grades = GradeLevel::all();
-        $parents = StudentParent::all(); // Menggunakan StudentParent yang benar
+        $parents = StudentParent::all();
 
+        // --- Perbaikan di sini: gunakan $availableUsers, bukan $users ---
         return view('students.create', compact('schools', 'availableUsers', 'grades', 'parents'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id|unique:students,user_id', // Pastikan user_id unik untuk setiap siswa
+            'user_id' => 'required|exists:users,id|unique:students,user_id',
             'school_id' => 'required|exists:schools,id',
             'grade_id' => 'nullable|exists:grade_levels,id',
-            'parent_id' => 'nullable|exists:student_parents,id', // Tabel student_parents
+            'parent_id' => 'nullable|exists:student_parents,id',
             'nis' => 'nullable|string|max:20|unique:students,nis',
             'nisn' => 'nullable|string|max:20|unique:students,nisn',
             'name' => 'required|string|max:255',
@@ -95,8 +90,8 @@ class StudentManagementController extends Controller
             'date_of_birth' => 'nullable|date',
             'address' => 'nullable|string',
             'religion' => 'nullable|string',
-            'phone_number' => 'nullable|string|max:20', // Gunakan phone_number sesuai database
-            'student_status' => 'required|string|max:50', // 'aktif', 'nonaktif', 'alumni', 'lulus'
+            'phone_number' => 'nullable|string|max:20',
+            'student_status' => 'required|string|max:50',
             'admission_date' => 'nullable|date',
             'graduation_date' => 'nullable|date',
             'notes' => 'nullable|string',
@@ -105,12 +100,6 @@ class StudentManagementController extends Controller
         ]);
 
         $validated['uuid'] = Str::uuid();
-
-        // Mengubah 'phone' ke 'phone_number' agar sesuai dengan database jika kolomnya berbeda
-        if (isset($validated['phone'])) {
-            $validated['phone_number'] = $validated['phone'];
-            unset($validated['phone']);
-        }
 
         if ($request->hasFile('photo')) {
             $validated['photo'] = $request->file('photo')->store('students/photos', 'public');
@@ -123,19 +112,24 @@ class StudentManagementController extends Controller
 
     public function show(Student $student)
     {
-        // Eager load semua relasi yang dibutuhkan di tampilan show
-        $student->load(['user', 'school', 'grade', 'parent', 'currentClassroom.level', 'currentClassroom.academicYear']);
+        $student->load([
+            'user',
+            'school',
+            'grade',
+            'parent',
+            'currentClassroomAssignment.classroom.level',
+            'currentClassroomAssignment.academicYear'
+        ]);
         return view('students.show', compact('student'));
     }
 
     public function edit(Student $student)
     {
         $schools = School::all();
-        $users = User::all(); // Atau filter user yang belum punya siswa jika perlu
+        $users = User::all(); // Ini adalah variabel $users yang Anda gunakan di view edit
         $grades = GradeLevel::all();
-        $parents = StudentParent::all(); // Menggunakan StudentParent yang benar
+        $parents = StudentParent::all();
 
-        // Eager load user dan parent jika belum terload (misal jika tidak menggunakan route model binding pada with)
         $student->loadMissing(['user', 'parent']);
 
         return view('students.edit', compact('student', 'schools', 'users', 'grades', 'parents'));
@@ -147,7 +141,7 @@ class StudentManagementController extends Controller
             'user_id' => ['required', 'exists:users,id', Rule::unique('students')->ignore($student->id, 'id')],
             'school_id' => 'required|exists:schools,id',
             'grade_id' => 'nullable|exists:grade_levels,id',
-            'parent_id' => 'nullable|exists:student_parents,id', // Tabel student_parents
+            'parent_id' => 'nullable|exists:student_parents,id',
             'nis' => ['nullable', 'string', 'max:20', Rule::unique('students')->ignore($student->id, 'id')],
             'nisn' => ['nullable', 'string', 'max:20', Rule::unique('students')->ignore($student->id, 'id')],
             'name' => 'required|string|max:255',
@@ -164,12 +158,6 @@ class StudentManagementController extends Controller
             'is_active' => 'boolean',
             'photo' => 'nullable|image|max:2048',
         ]);
-
-        // Mengubah 'phone' ke 'phone_number' agar sesuai dengan database jika kolomnya berbeda
-        if (isset($validated['phone'])) {
-            $validated['phone_number'] = $validated['phone'];
-            unset($validated['phone']);
-        }
 
         if ($request->hasFile('photo')) {
             if ($student->photo) {
@@ -197,7 +185,6 @@ class StudentManagementController extends Controller
         }
     }
 
-    // Metode untuk mencari siswa berdasarkan nama untuk fitur di masa depan (misal: penugasan kelas)
     public function searchStudents(Request $request)
     {
         $search = $request->query('q');

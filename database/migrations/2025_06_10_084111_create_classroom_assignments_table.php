@@ -11,13 +11,28 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Ganti nama tabel jika 'classroom_assignments' sebelumnya digunakan untuk hal lain
+        // Jika tabel sebelumnya sudah ada dan fungsinya berbeda, buat migrasi baru dengan nama yang lebih tepat
+        // seperti 'student_class_assignments' atau 'student_classroom_enrollments'
         Schema::create('classroom_assignments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('grade_level_id')->constrained()->onDelete('cascade'); // X, XI, XII
-            $table->foreignId('class_enrollments_id')->constrained()->onDelete('cascade'); // Class Enrollments
-            $table->foreignId('classroom_id')->constrained()->onDelete('cascade');
-            $table->string('name'); // e.g., "A", "B"
-            $table->foreignId('homeroom_teacher_id')->nullable()->constrained('teachers')->onDelete('set null');
+            $table->foreignId('student_id')->constrained()->onDelete('cascade'); // Siswa yang ditugaskan
+            $table->foreignId('classroom_id')->constrained()->onDelete('cascade'); // Kelas (ruangan fisik/logical)
+            $table->foreignId('academic_year_id')->constrained()->onDelete('cascade'); // Tahun ajaran penugasan
+            $table->foreignId('teacher_id')->nullable()->constrained('teachers')->onDelete('set null'); // Wali kelas untuk penugasan ini (opsional)
+
+            $table->string('status')->default('active'); // e.g., 'active', 'inactive', 'transferred'
+            $table->boolean('is_active')->default(true); // Status aktif penugasan
+            $table->text('notes')->nullable(); // Catatan tambahan
+            $table->timestamp('assigned_at')->useCurrent(); // Kapan penugasan dilakukan
+
+            // Unique constraint: Seorang siswa hanya bisa di satu kelas di satu tahun ajaran
+            $table->unique(['student_id', 'academic_year_id']);
+
+            // Opsional: Satu kelas hanya bisa punya satu wali kelas di satu tahun ajaran
+            // Jika homeroom_teacher_id adalah wali kelas untuk kelas itu secara umum, bukan hanya untuk siswa ini
+            // $table->unique(['classroom_id', 'academic_year_id', 'teacher_id']);
+
             $table->timestamps();
         });
     }

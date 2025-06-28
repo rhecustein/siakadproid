@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes; // Tambahkan jika menggunakan Soft
 
 class Student extends Model
 {
-    use HasFactory;
+     use HasFactory;
     // use SoftDeletes; // Uncomment this line if you use SoftDeletes on Student model
 
     protected $table = 'students';
@@ -78,14 +78,13 @@ class Student extends Model
     }
 
     // Relasi ke dompet (saldo siswa)
-    // Jika Wallet memang morphOne, pastikan tabel wallets punya kolom owner_type dan owner_id
-    // Jika Wallet terhubung ke user_id: return $this->hasOne(Wallet::class, 'user_id', 'user_id');
+    // Asumsi: Wallet terhubung ke 'owner_id' dan 'owner_type' (polimorfik)
     public function wallet()
     {
         return $this->morphOne(Wallet::class, 'owner');
     }
 
-    // Relasi ke riwayat enroll kelas/tahun ajaran (jika ini adalah enrollments, bukan penugasan langsung)
+    // Relasi ke riwayat enroll kelas/tahun ajaran (jika ini adalah enrollments)
     public function enrollments()
     {
         return $this->hasMany(Enrollment::class);
@@ -100,34 +99,41 @@ class Student extends Model
     /**
      * Relasi untuk mendapatkan penugasan kelas aktif siswa saat ini.
      * Ini adalah penugasan spesifik siswa ke sebuah kelas di tahun ajaran tertentu.
+     * Metode ini AKAN DI-EAGER LOAD.
      */
-    public function currentClassroomAssignment()
+     public function currentClassroomAssignment()
     {
-        return $this->hasOne(ClassroomAssignment::class, 'student_id')
-                    ->where('is_active', true) // Asumsi ClassroomAssignment punya is_active
+        // Pastikan 'student_id' adalah foreign key di tabel 'classroom_assignments'
+        return $this->hasOne(ClassroomAssignment::class, 'student_id', 'id')
+                    ->where('is_active', true) // Asumsi ClassroomAssignment punya kolom is_active
                     ->whereHas('academicYear', function ($query) {
-                        $query->where('is_active', true); // Hanya tahun ajaran aktif
-                    })
-                    ->with(['classroom.level', 'academicYear']); // Eager load classroom (dengan level) dan academicYear
+                        $query->where('is_active', true); // Asumsi AcademicYear punya kolom is_active
+                    });
     }
 
     /**
-     * Accessor untuk mendapatkan objek Classroom aktif siswa.
-     * Menggunakan relasi currentClassroomAssignment yang sudah ada.
-     * Ini adalah cara yang lebih aman daripada hasOneThrough jika relasi perantara kompleks.
+     * Accessor untuk mendapatkan objek Classroom yang aktif dari siswa.
+     * Memungkinkan Anda mengakses kelas siswa dengan sintaks properti biasa: $student->currentClassroom->name
+     * Accessor ini mengandalkan relasi `currentClassroomAssignment` yang sudah di-eager load.
      */
     public function getCurrentClassroomAttribute()
     {
-        // Jika currentClassroomAssignment sudah di-eager load, gunakan itu.
-        // Jika tidak, bisa di-load di sini, tapi akan menyebabkan N+1 problem jika tidak di-eager load.
-        // Asumsi eager loading sudah dilakukan di controller.
-        return $this->currentClassroomAssignment->classroom ?? null;
+        // Akses relasi `currentClassroomAssignment` (yang di-eager load di controller),
+        // kemudian ambil objek `classroom` dari penugasan tersebut.
+        // Gunakan `optional()` atau `?? null` untuk penanganan null yang aman.
+        return optional($this->currentClassroomAssignment)->classroom;
     }
 
     // PENTING: Pastikan model-model berikut memiliki relasi baliknya dan kolom yang sesuai:
-    // ClassroomAssignment -> belongsTo(Student::class)
-    // ClassroomAssignment -> belongsTo(Classroom::class)
-    // ClassroomAssignment -> belongsTo(AcademicYear::class)
-    // Classroom -> hasMany(ClassroomAssignment::class, 'classroom_id')
-    // Classroom -> belongsTo(Level::class) // Jika 'level' diakses dari classroom
+    // App\Models\ClassroomAssignment.php harus memiliki:
+    // public function student() { return $this->belongsTo(Student::class); }
+    // public function classroom() { return $this->belongsTo(Classroom::class); }
+    // public function academicYear() { return $this->belongsTo(AcademicYear::class); }
+    //
+    // App\Models\Classroom.php harus memiliki:
+    // public function level() { return $this->belongsTo(Level::class); } // Jika Anda mengakses level dari classroom
+    //
+    // App\Models\AcademicYear.php harus memiliki:
+    // public function classroomAssignments() { return $this->hasMany(ClassroomAssignment::class); }
+    // Pastikan juga kolom 'is_active' ada di tabel academic_years.
 }

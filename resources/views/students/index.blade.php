@@ -113,7 +113,7 @@
             <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
             <option value="nonaktif" {{ request('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
             <option value="alumni" {{ request('status') == 'alumni' ? 'selected' : '' }}>Alumni</option>
-            <option value="lulus" {{ request('status') == 'lulus' ? 'selected' : '' }}>Lulus</option> {{-- Assuming 'lulus' is also a possible status --}}
+            <option value="lulus" {{ request('status') == 'lulus' ? 'selected' : '' }}>Lulus</option>
         </select>
 
         <button type="submit"
@@ -150,6 +150,7 @@
                         <td class="px-4 py-2">{{ $student->nisn ?? '—' }}</td>
                         <td class="px-4 py-2 font-semibold text-gray-800">{{ $student->name }}</td>
                         <td class="px-4 py-2">{{ $student->school->name ?? '—' }}</td>
+                        {{-- Menggunakan accessor currentClassroom --}}
                         <td class="px-4 py-2">{{ $student->currentClassroom->name ?? '—' }}</td>
                         <td class="px-4 py-2">{{ $student->parent->name ?? '—' }}</td>
                         <td class="px-4 py-2">

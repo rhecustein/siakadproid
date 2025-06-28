@@ -15,11 +15,11 @@
                 <i class="fas fa-file-import mr-2"></i> Import
             </a>
             {{-- Tombol Export --}}
-            <a href="#" class="inline-flex items-center px-5 py-2.5 bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold border border-gray-300 hover:bg-gray-300 transition-colors duration-200 shadow-sm">
+            <a href="#" class="inline-flex items-center px-5 py-2.5 bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold border border-gray-300 hover:bg-gray-200 transition-colors duration-200 shadow-sm">
                 <i class="fas fa-file-export mr-2"></i> Export
             </a>
             {{-- Tombol Tambah Siswa --}}
-            <a href="{{ route('master.students.create') }}"
+            <a href="{{ route('core.students.create') }}"
                class="inline-flex items-center px-5 py-2.5 bg-green-600 text-white rounded-lg text-sm font-semibold shadow-md hover:bg-green-700 transition-colors duration-200 min-w-max">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                 Tambah Siswa
@@ -88,7 +88,7 @@
     </div>
 
 
-    <form method="GET" action="{{ route('master.students.index') }}" class="mt-6 grid grid-cols-1 md:grid-cols-5 gap-4 bg-white p-4 rounded-xl shadow">
+    <form method="GET" action="{{ route('core.students.index') }}" class="mt-6 grid grid-cols-1 md:grid-cols-5 gap-4 bg-white p-4 rounded-xl shadow">
         <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama atau NIS..."
             class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4">
 
@@ -113,7 +113,7 @@
             <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
             <option value="nonaktif" {{ request('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
             <option value="alumni" {{ request('status') == 'alumni' ? 'selected' : '' }}>Alumni</option>
-            <option value="lulus" {{ request('status') == 'lulus' ? 'selected' : '' }}>Lulus</option> {{-- Assuming 'lulus' is also a possible status --}}
+            <option value="lulus" {{ request('status') == 'lulus' ? 'selected' : '' }}>Lulus</option>
         </select>
 
         <button type="submit"
@@ -150,7 +150,8 @@
                         <td class="px-4 py-2">{{ $student->nisn ?? '—' }}</td>
                         <td class="px-4 py-2 font-semibold text-gray-800">{{ $student->name }}</td>
                         <td class="px-4 py-2">{{ $student->school->name ?? '—' }}</td>
-                        <td class="px-4 py-2">{{ $student->currentClassroom->name ?? '—' }}</td> {{-- Changed to currentClassroom --}}
+                        {{-- Menggunakan accessor currentClassroom --}}
+                        <td class="px-4 py-2">{{ optional($student->currentClassroom)->name ?? '—' }}</td>
                         <td class="px-4 py-2">{{ $student->parent->name ?? '—' }}</td>
                         <td class="px-4 py-2">
                             @if($student->gender === 'L') Laki-laki
@@ -178,7 +179,7 @@
                                         data-student-nis="{{ $student->nis ?? 'N/A' }}"
                                         data-student-nisn="{{ $student->nisn ?? 'N/A' }}"
                                         data-student-school="{{ $student->school->name ?? 'N/A' }}"
-                                        data-student-class="{{ $student->currentClassroom->name ?? 'N/A' }}" {{-- Changed to currentClassroom --}}
+                                        data-student-class="{{ optional($student->currentClassroom)->name ?? 'N/A' }}"
                                         data-student-parent-name="{{ $student->parent->name ?? 'N/A' }}"
                                         data-student-gender="{{ $student->gender === 'L' ? 'Laki-laki' : ($student->gender === 'P' ? 'Perempuan' : '—') }}"
                                         data-student-admission-date="{{ \Carbon\Carbon::parse($student->admission_date)->translatedFormat('d M Y') ?? 'N/A' }}"
@@ -191,11 +192,11 @@
                                     <i class="fas fa-eye w-4 h-4"></i>
                                 </button>
 
-                                <a href="{{ route('master.students.edit', $student->id) }}" title="Edit Siswa"
+                                <a href="{{ route('core.students.edit', $student->id) }}" title="Edit Siswa"
                                    class="p-2 text-xs font-semibold text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors duration-150 flex items-center justify-center">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.232z"></path></svg>
                                 </a>
-                                <form action="{{ route('master.students.destroy', $student->id) }}" method="POST" class="inline"
+                                <form action="{{ route('core.students.destroy', $student->id) }}" method="POST" class="inline"
                                       onsubmit="return confirm('Yakin ingin menghapus data siswa ini? Tindakan ini tidak dapat dibatalkan.')">
                                     @csrf
                                     @method('DELETE')
