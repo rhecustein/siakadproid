@@ -47,7 +47,7 @@ class SchoolController extends Controller
             'email'     => $request->email,
         ]);
 
-        return redirect()->route('master.schools.index')->with('success', 'Sekolah berhasil ditambahkan.');
+        return redirect()->route('shared.schools.index')->with('success', 'Sekolah berhasil ditambahkan.');
     }
 
     public function edit(School $school)
@@ -79,13 +79,13 @@ class SchoolController extends Controller
             'email'     => $request->email,
         ]);
 
-        return redirect()->route('master.schools.index')->with('success', 'Sekolah berhasil diperbarui.');
+        return redirect()->route('shared.schools.index')->with('success', 'Sekolah berhasil diperbarui.');
     }
 
     public function destroy(School $school)
     {
         $school->delete();
-        return redirect()->route('master.schools.index')->with('deleted', 'Sekolah berhasil dihapus.');
+        return redirect()->route('shared.schools.index')->with('deleted', 'Sekolah berhasil dihapus.');
     }
 }
 

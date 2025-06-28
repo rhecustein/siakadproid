@@ -23,6 +23,8 @@ class Classroom extends Model
         'room',
         'order',
         'is_active',
+        'next_class_id',
+        'next_classroom_id',
     ];
 
 
@@ -72,5 +74,10 @@ class Classroom extends Model
     public function gradeLevel()
     {
         return $this->belongsTo(GradeLevel::class);
+    }
+
+    public function room()
+    {
+        return $this->belongsTo(Room::class);
     }
 }

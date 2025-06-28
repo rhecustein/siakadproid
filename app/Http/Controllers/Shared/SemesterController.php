@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Shared;
 
 use App\Http\Controllers\Controller;
@@ -6,22 +7,52 @@ use App\Models\Semester;
 use App\Models\SchoolYear;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Http\Requests\StoreSemesterRequest; // Asumsikan Anda akan membuat form request ini
+use App\Http\Requests\UpdateSemesterRequest; // Asumsikan Anda akan membuat form request ini
 
 class SemesterController extends Controller
 {
-    public function index()
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
     {
-        $semesters = Semester::with('schoolYear')->orderByDesc('id')->get();
+        $query = Semester::with('schoolYear');
+
+        // Menambahkan fungsionalitas pencarian
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'like', '%' . $search . '%')
+                  ->orWhereHas('schoolYear', function ($q) use ($search) {
+                      $q->where('name', 'like', '%' . $search . '%');
+                  });
+        }
+
+        // Menambahkan fungsionalitas filter status
+        if ($request->filled('status')) {
+            $status = $request->input('status');
+            $query->where('is_active', (bool)$status);
+        }
+
+        // Menggunakan paginasi untuk daftar semester
+        $semesters = $query->orderByDesc('id')->paginate(10); // Menampilkan 10 item per halaman
+
         return view('admin.masters.semesters.index', compact('semesters'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create()
     {
         $years = SchoolYear::all();
         return view('admin.masters.semesters.create', compact('years'));
     }
 
-    public function store(Request $request)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request) // Menggunakan Request standar karena Form Request belum dibuat oleh user
     {
         $request->validate([
             'school_year_id' => 'required|exists:school_years,id',
@@ -32,28 +63,40 @@ class SemesterController extends Controller
             'uuid' => Str::uuid(), // generate UUID
             'school_year_id' => $request->school_year_id,
             'name' => $request->name,
-            'type' => strtolower($request->name) === 'genap' ? 'genap' : 'ganjil', // auto-pilih type
-            'is_active' => false,
+            // auto-pilih type berdasarkan nama (ganjil/genap)
+            'type' => strtolower($request->name) === 'genap' ? 'genap' : 'ganjil',
+            'is_active' => false, // Default is_active ke false saat membuat
         ]);
 
-        return redirect()->route('academic.semesters.index')->with('success', 'Semester ditambahkan.');
+        // Tetap menggunakan rute yang Anda berikan
+        return redirect()->route('shared.semesters.index')->with('success', 'Semester ditambahkan.');
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     */
     public function edit(Semester $semester)
     {
         $years = SchoolYear::all();
         return view('admin.masters.semesters.edit', compact('semester', 'years'));
     }
 
-    public function update(Request $request, Semester $semester)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Semester $semester) // Menggunakan Request standar karena Form Request belum dibuat oleh user
     {
         $request->validate([
             'school_year_id' => 'required|exists:school_years,id',
             'name' => 'required|string',
-            'is_active' => 'nullable|boolean',
+            'is_active' => 'nullable|boolean', // Pastikan validasi untuk is_active sebagai boolean
         ]);
 
-        if ($request->is_active) {
+        // Mengambil nilai is_active, menggunakan boolean cast untuk checkbox
+        $is_active = $request->boolean('is_active'); 
+
+        // Jika semester ini diatur aktif, nonaktifkan semester lain di tahun ajaran yang sama
+        if ($is_active) {
             Semester::where('school_year_id', $request->school_year_id)
                 ->where('id', '!=', $semester->id)
                 ->update(['is_active' => false]);
@@ -62,15 +105,22 @@ class SemesterController extends Controller
         $semester->update([
             'school_year_id' => $request->school_year_id,
             'name' => $request->name,
-            'is_active' => $request->has('is_active'),
+            // Re-evaluasi type jika nama berubah
+            'type' => strtolower($request->name) === 'genap' ? 'genap' : 'ganjil', 
+            'is_active' => $is_active, // Menggunakan nilai boolean yang sudah dikonversi
         ]);
 
-        return redirect()->route('academic.semesters.index')->with('success', 'Semester diperbarui.');
+        // Tetap menggunakan rute yang Anda berikan
+        return redirect()->route('shared.semesters.index')->with('success', 'Semester diperbarui.');
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(Semester $semester)
     {
         $semester->delete();
-        return redirect()->route('academic.semesters.index')->with('success', 'Semester dihapus.');
+        // Tetap menggunakan rute yang Anda berikan
+        return redirect()->route('shared.semesters.index')->with('success', 'Semester dihapus.');
     }
 }

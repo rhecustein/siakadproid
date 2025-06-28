@@ -1,3 +1,479 @@
+/* Pastikan ini ada di bagian atas file jika menggunakan @layer base */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    :root {
+        /* Warna utama aplikasi (dapat disesuaikan agar lebih harmonis dengan logo) */
+        --color-primary: 30 58 138; /* Blue-800, sebagai warna dasar yang kuat */
+
+        /* Warna aksen dari logo: Hijau dan Kuning */
+        --color-accent-start: 46 125 50; /* Green dari logo: #2e7d32 */
+        --color-accent-end: 253 216 53; /* Yellow dari logo: #fdd835 */
+
+        /* Warna khusus Sidebar */
+        --sidebar-bg: 17 24 39; /* gray-900 */
+        --sidebar-text: 209 213 219; /* gray-300 */
+        --sidebar-border: 55 65 81; /* gray-700 */
+        --sidebar-hover-bg: 31 41 55; /* gray-800 */
+        --sidebar-active-bg: 37 99 235; /* blue-600, harmonis dengan primary */
+        --sidebar-active-text: 255 255 255; /* white */
+
+        /* Warna khusus Welcome Page */
+        --welcome-blue-dark: 23 37 84; /* blue-900 equivalent, deep blue */
+        --welcome-blue-light: 37 99 235; /* blue-600 equivalent, harmonis dengan primary */
+        --welcome-indigo: 79 70 229; /* indigo-600 equivalent, untuk gradien tambahan */
+        --welcome-gray-text: 75 85 99; /* gray-600 equivalent */
+        --ai-glow-color: 0 204 255; /* Cyan, untuk glow AI yang futuristik dan kontras */
+        --data-stream-blue: 59 130 246; /* blue-500 equivalent */
+        --data-stream-green: 16 185 129; /* emerald-500 equivalent */
+        --data-stream-red: 239 68 68; /* red-500 equivalent */
+
+        /* Warna khusus Login Page */
+        --login-bg-start: 229 231 235; /* gray-200 equivalent */
+        --login-bg-end: 209 213 219; /* gray-300 equivalent */
+        --login-primary-blue: 59 130 246; /* blue-500, untuk elemen interaktif login */
+        --login-visual-dark: 23 37 84; /* blue-900 equivalent */
+        --login-visual-light: 59 130 246; /* blue-500 */
+        --login-visual-accent: 139 92 246; /* purple-500, untuk aksen visual panel login */
+    }
+}
+
+/* Animasi Border RGB untuk Alert Strip */
+.border-animation {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.5rem;
+}
+
+.border-animation::before {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 300%;
+    height: 300%;
+    background: conic-gradient(
+        from 0deg,
+        rgb(var(--color-accent-start)) 0%,
+        rgb(var(--color-accent-end)) 33%,
+        rgb(var(--color-primary)) 66%,
+        rgb(var(--color-accent-start)) 100%
+    );
+    animation: rotateBorder 8s ease-in-out infinite;
+    z-index: -1;
+}
+
+@keyframes rotateBorder {
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+/* Sidebar Specific Styles */
+.hidden-mobile {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .hidden-mobile {
+        display: flex;
+    }
+}
+
+.menu-active {
+    /* Digunakan di sidebar untuk highlight menu aktif */
+    @apply bg-blue-100 font-semibold text-blue-800;
+}
+
+/* Aktif link/menu dengan border gradien beranimasi pada Sidebar */
+.sidebar-link-active-indicator {
+    position: relative;
+    background-color: rgba(var(--sidebar-active-bg), 0.2); /* Transparansi untuk efek modern */
+    color: rgb(var(--sidebar-active-text));
+}
+
+.sidebar-link-active-indicator::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px; /* Garis tipis */
+    height: 100%;
+    background: linear-gradient(to bottom, rgb(var(--color-accent-start)), rgb(var(--color-accent-end)));
+    animation: pulseVerticalBorder 1.5s infinite alternate; /* Animasi berdenyut */
+    border-radius: 0 4px 4px 0; /* Sudut membulat di kanan */
+    z-index: 1; /* Pastikan di atas background link */
+}
+
+@keyframes pulseVerticalBorder {
+    from { opacity: 0.6; transform: scaleY(0.5); }
+    to { opacity: 1; transform: scaleY(1); }
+}
+
+/* Animasi chevron untuk details/summary di Sidebar */
+.sidebar-chevron {
+    transition: transform 0.3s ease-in-out;
+}
+.sidebar-details[open] .sidebar-chevron {
+    transform: rotate(90deg);
+}
+
+/* Logo Text Glow di Sidebar Header & Welcome Page */
+.logo-glow-text {
+    /* Menggunakan warna aksen dari logo untuk text-shadow */
+    text-shadow: 0 0 5px rgba(var(--color-accent-start), 0.5), 0 0 10px rgba(var(--color-accent-end), 0.3);
+}
+
+/* Transisi umum untuk hover di Sidebar */
+.transition-sidebar-item {
+    transition: all 0.2s ease-in-out;
+}
+
+
+/* --- Welcome Page Specific Styles --- */
+
+/* Animasi Latar Belakang Hero Section: Jaringan Konvergensi Data */
+.hero-background-animation {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: 0;
+    background: radial-gradient(circle at center,
+        rgba(var(--welcome-blue-dark), 0.05) 0%,
+        rgba(var(--welcome-blue-dark), 0.1) 30%,
+        transparent 70%); /* Gradien dasar yang halus */
+}
+
+.hero-background-animation::before,
+.hero-background-animation::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1; /* Di atas background utama Hero */
+}
+
+/* Orb konvergen yang lebih besar, lebih lambat */
+.hero-background-animation::before {
+    width: 100vw; /* Menggunakan vw agar mencakup area yang lebih lebar */
+    height: 100vw;
+    top: 50%;
+    left: 50%;
+    background: radial-gradient(circle, rgba(var(--welcome-blue-light), 0.1), rgba(var(--welcome-indigo), 0.05) 50%, transparent 70%);
+    animation: convergeNetwork 20s linear infinite;
+    transform: translate(-50%, -50%) scale(0);
+}
+
+/* Orb konvergen yang lebih kecil, lebih cepat */
+.hero-background-animation::after {
+    width: 50vw; /* Lingkaran yang lebih kecil */
+    height: 50vw;
+    top: 50%;
+    left: 50%;
+    background: radial-gradient(circle, rgba(var(--welcome-blue-light), 0.15), rgba(var(--welcome-indigo), 0.08) 50%, transparent 70%);
+    animation: convergeNetwork 15s linear infinite 5s; /* Mulai tertunda */
+    transform: translate(-50%, -50%) scale(0);
+}
+
+
+@keyframes convergeNetwork {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+}
+
+/* AI Core Glow untuk Logo di Welcome Page & Login Page */
+.ai-logo-glow {
+    animation: aiPulse 3s infinite alternate ease-in-out;
+    /* Menggunakan warna cyan yang baru untuk AI glow */
+    filter: drop-shadow(0 0 5px rgba(var(--ai-glow-color), 0.5)) drop-shadow(0 0 10px rgba(var(--ai-glow-color), 0.3));
+}
+
+@keyframes aiPulse {
+    0% { filter: drop-shadow(0 0 5px rgba(var(--ai-glow-color), 0.5)) drop-shadow(0 0 10px rgba(var(--ai-glow-color), 0.3)); }
+    100% { filter: drop-shadow(0 0 10px rgba(var(--ai-glow-color), 0.7)) drop-shadow(0 0 20px rgba(var(--ai-glow-color), 0.5)); }
+}
+
+/* Feature card shimmer on hover di Welcome Page */
+.feature-card {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    background-color: white; /* Pastikan background solid */
+}
+
+.feature-card-shimmer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transform: translateX(-100%);
+    transition: none; /* Dikontrol oleh JS atau hover */
+    pointer-events: none;
+    z-index: 2; /* Di atas background ikon */
+}
+
+/* Animasi pulse untuk ikon fitur tertentu di Welcome Page */
+.feature-icon-pulse {
+    animation: iconPulse 2s infinite ease-in-out;
+}
+
+@keyframes iconPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Data stream animation untuk bagian "How it Works" */
+.data-stream-line {
+    position: absolute;
+    background: linear-gradient(to right, transparent, rgba(var(--data-stream-blue), 0.8), transparent);
+    height: 2px;
+    animation: flowData 3s linear infinite;
+    transform-origin: left center;
+}
+.data-stream-line.vertical {
+    background: linear-gradient(to bottom, transparent, rgba(var(--data-stream-green), 0.8), transparent);
+    width: 2px;
+    height: 100%;
+    animation: flowDataVertical 3s linear infinite;
+    transform-origin: top center;
+}
+
+@keyframes flowData {
+    0% { transform: translateX(-100%); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateX(100%); opacity: 0; }
+}
+
+@keyframes flowDataVertical {
+    0% { transform: translateY(-100%); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(100%); opacity: 0; }
+}
+
+/* Denyutan halus untuk ikon AI Core di bagian "How it Works" */
+.ai-core-glow-pulse {
+    animation: aiCorePulse 2s infinite alternate ease-in-out;
+}
+
+@keyframes aiCorePulse {
+    0% { filter: drop-shadow(0 0 5px rgba(var(--ai-glow-color), 0.5)); transform: scale(1); }
+    100% { filter: drop-shadow(0 0 15px rgba(var(--ai-glow-color), 0.8)); transform: scale(1.05); }
+}
+
+/* Animasi fade-in umum untuk komponen section */
+.animate-fade-in {
+    animation: fadeIn 1s ease-out forwards;
+    opacity: 0;
+}
+.animate-fade-in-up {
+    animation: fadeInUp 1s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+.animate-delay-100 { animation-delay: 0.1s; }
+.animate-delay-200 { animation-delay: 0.2s; }
+.animate-delay-300 { animation-delay: 0.3s; }
+.animate-delay-400 { animation-delay: 0.4s; }
+.animate-delay-500 { animation-delay: 0.5s; }
+.animate-delay-600 { animation-delay: 0.6s; }
+.animate-delay-700 { animation-delay: 0.7s; }
+
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Animasi pulse untuk CTA button */
+.animate-pulse-grow {
+    animation: pulseGrow 2s infinite ease-in-out;
+}
+
+@keyframes pulseGrow {
+    0% { transform: scale(1); box-shadow: 0 4px 12px rgba(var(--welcome-blue-light), 0.2); }
+    50% { transform: scale(1.03); box-shadow: 0 6px 16px rgba(var(--welcome-blue-light), 0.4); }
+    100% { transform: scale(1); box-shadow: 0 4px 12px rgba(var(--welcome-blue-light), 0.2); }
+}
+
+/* Untuk animasi staggered pada metrik */
+.staggered-metric-item {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+
+/* --- Login Page Specific Styles --- */
+
+/* Animasi Latar Belakang Login Page */
+.login-bg-animation {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.login-bg-animation::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center,
+        rgba(var(--login-primary-blue), 0.05) 0%, /* Lebih samar dari welcome */
+        transparent 70%);
+    animation: rotateAndScale 30s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes rotateAndScale {
+    0% { transform: translate(-50%, -50%) rotate(0deg) scale(0.8); opacity: 0.6; }
+    50% { transform: translate(-50%, -50%) rotate(180deg) scale(1.2); opacity: 0.8; }
+    100% { transform: translate(-50%, -50%) rotate(360deg) scale(0.8); opacity: 0.6; }
+}
+
+/* Styling untuk indikator tab aktif */
+.tab-active-underline {
+    position: relative;
+    padding-bottom: 0.5rem; /* Menambahkan padding untuk garis */
+}
+.tab-active-underline::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%; /* Lebar garis indikator aktif */
+    height: 3px;
+    background-color: rgb(var(--login-primary-blue)); /* Warna primary blue */
+    border-radius: 9999px; /* Sudut sepenuhnya membulat */
+    transition: width 0.3s ease-in-out, background-color 0.3s ease-in-out;
+}
+
+/* Styling kustom untuk input radio/checkbox */
+.form-radio-checkbox {
+    border-radius: 0.25rem; /* rounded-md */
+    border-color: rgb(156 163 175); /* gray-400 */
+    color: rgb(var(--login-primary-blue)); /* Warna centang */
+    transition: all 0.2s ease-in-out;
+}
+.form-radio-checkbox:checked {
+    background-color: rgb(var(--login-primary-blue));
+    border-color: rgb(var(--login-primary-blue));
+}
+.form-radio-checkbox:focus {
+    box-shadow: 0 0 0 3px rgba(var(--login-primary-blue), 0.3);
+    border-color: rgb(var(--login-primary-blue));
+}
+
+
+/* Gaya untuk Panel Visual Kanan (menggantikan gambar) */
+.login-visual-panel {
+    position: relative;
+    overflow: hidden; /* Penting untuk menampung pseudo-elements animasi */
+    /* Base gradient untuk panel */
+    background: linear-gradient(135deg, rgb(var(--login-visual-dark)), rgb(var(--welcome-indigo)));
+}
+
+/* Animasi Partikel/Orb Halus 1 */
+.login-visual-panel::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: -20%;
+    width: 120%; /* Besar agar mencakup area */
+    height: 120%;
+    background: radial-gradient(circle at center,
+        rgba(255, 255, 255, 0.08) 0%, /* Cahaya samar */
+        transparent 50%);
+    animation: moveAndFade1 25s linear infinite alternate;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1; /* Di atas background utama */
+}
+
+/* Animasi Partikel/Orb Halus 2 (Staggered) */
+.login-visual-panel::after {
+    content: '';
+    position: absolute;
+    bottom: -15%;
+    right: -15%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center,
+        rgba(var(--login-visual-accent), 0.08) 0%, /* Cahaya aksen */
+        transparent 60%);
+    animation: moveAndFade2 20s linear infinite; /* Animasi berbeda */
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Keyframes untuk animasi pergerakan dan fade */
+@keyframes moveAndFade1 {
+    0% { transform: translate(0, 0) scale(0.8); opacity: 0.6; }
+    25% { transform: translate(10%, 20%) scale(0.9); opacity: 0.7; }
+    50% { transform: translate(0, 40%) scale(1.1); opacity: 0.8; }
+    75% { transform: translate(-10%, 20%) scale(1); opacity: 0.7; }
+    100% { transform: translate(0, 0) scale(0.8); opacity: 0.6; }
+}
+
+@keyframes moveAndFade2 {
+    0% { transform: translate(0, 0) scale(0.9); opacity: 0.7; }
+    25% { transform: translate(-15%, -25%) scale(1); opacity: 0.8; }
+    50% { transform: translate(-30%, 0) scale(0.8); opacity: 0.7; }
+    75% { transform: translate(-15%, 25%) scale(1.1); opacity: 0.9; }
+    100% { transform: translate(0, 0) scale(0.9); opacity: 0.7; }
+}
+
+/* Opsional: Tambahkan beberapa garis cahaya yang bergerak */
+.login-visual-panel .digital-lines-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0; /* Di bawah orbs */
+}
+
+.login-visual-panel .digital-lines-overlay::before,
+.login-visual-panel .digital-lines-overlay::after {
+    content: '';
+    position: absolute;
+    background: rgba(255, 255, 255, 0.03); /* Garis yang sangat samar */
+    pointer-events: none;
+}
+
+.login-visual-panel .digital-lines-overlay::before { /* Garis Horizontal */
+    top: 0; left: 0; width: 100%; height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.03), transparent);
+    animation: slideLineHorizontal 20s linear infinite;
+    transform-origin: left center;
+}
+.login-visual-panel .digital-lines-overlay::after { /* Garis Vertikal */
+    top: 0; left: 0; height: 100%; width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.03), transparent);
+    animation: slideLineVertical 25s linear infinite;
+    transform-origin: top center;
+}
+
+@keyframes slideLineHorizontal {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(100%); }
+}
+@keyframes slideLineVertical {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(100%); }
+}

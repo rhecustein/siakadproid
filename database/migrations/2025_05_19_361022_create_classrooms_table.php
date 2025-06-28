@@ -16,10 +16,12 @@ return new class extends Migration
             $table->unsignedBigInteger('level_id')->nullable();
             $table->unsignedBigInteger('academic_year_id')->nullable();
             $table->unsignedBigInteger('curriculum_id')->nullable();
+            $table->unsignedBigInteger('room_id')->nullable();
+
 
             $table->string('name');              // e.g. X IPA 1
             $table->string('alias')->nullable(); // Optional short name
-            $table->string('room')->nullable();  // Room info
+            $table->string('room_dsc')->nullable();  // Room info
 
             $table->integer('order')->default(0);
             $table->boolean('is_active')->default(true);

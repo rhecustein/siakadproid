@@ -34,7 +34,7 @@ class BranchController extends Controller
             'address' => $request->address,
         ]);
 
-        return redirect()->route('master.branches.index')->with('success', 'Cabang berhasil ditambahkan.');
+        return redirect()->route('shared.branches.index')->with('success', 'Cabang berhasil ditambahkan.');
     }
 
     public function show(Branch $branch)
@@ -59,13 +59,13 @@ class BranchController extends Controller
             'address' => $request->address,
         ]);
 
-        return redirect()->route('master.branches.index')->with('success', 'Cabang berhasil diperbarui.');
+        return redirect()->route('shared.branches.index')->with('success', 'Cabang berhasil diperbarui.');
     }
 
     public function destroy(Branch $branch)
     {
         $branch->delete();
 
-        return redirect()->route('master.branches.index')->with('deleted', 'Cabang berhasil dihapus.');
+        return redirect()->route('shared.branches.index')->with('deleted', 'Cabang berhasil dihapus.');
     }
 }

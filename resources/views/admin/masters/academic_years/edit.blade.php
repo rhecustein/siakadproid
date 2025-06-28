@@ -7,7 +7,7 @@
   </div>
 
   <div class="bg-white shadow rounded-xl p-6">
-    <form action="route('master.academic_years.update', ['academic_year' => $academicYear->id])" method="POST" class="space-y-6">
+    <form action="route('academic.academic-years.update', ['academic_year' => $academicYear->id])" method="POST" class="space-y-6">
       @csrf
       @method('PUT')
 
@@ -22,7 +22,7 @@
       </div>
 
       <div class="flex items-center justify-between">
-        <a href="{{ route('master.academic_years.index') }}"
+        <a href="{{ route('academic.academic-years.index') }}"
            class="text-sm text-gray-600 hover:underline">← Kembali ke daftar</a>
 
         <button type="submit"
