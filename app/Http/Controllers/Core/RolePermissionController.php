@@ -5,45 +5,49 @@ namespace App\Http\Controllers\Core;
 use App\Http\Controllers\Controller;
 use App\Models\Role;
 use App\Models\RolePermission;
+use App\Models\Permission;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class RolePermissionController extends Controller
 {
-    public function index()
+     // Menampilkan daftar peran dengan izin mereka untuk diedit
+    public function index(Request $request)
     {
-        $roles = Role::with('permissions')->get();
-        return view('role_permissions.index', compact('roles'));
+        $roles = Role::with('permissions')->orderBy('name')->paginate(10);
+        $permissions = Permission::orderBy('name')->get(); // Semua izin yang tersedia
+
+        // Untuk filter
+        $queryRoles = Role::query();
+        if ($request->filled('search_role')) {
+            $queryRoles->where('name', 'like', '%' . $request->search_role . '%');
+        }
+        $filteredRoles = $queryRoles->paginate(10)->appends($request->query());
+
+        return view('admin.access.role-permissions.index', compact('roles', 'permissions', 'filteredRoles'));
     }
 
+    // Menampilkan form untuk mengelola izin suatu peran
     public function edit(Role $role)
     {
-        $permissions = RolePermission::where('role_id', $role->id)->get();
-        return view('role_permissions.edit', compact('role', 'permissions'));
+        $allPermissions = Permission::orderBy('category')->orderBy('name')->get()->groupBy('category');
+        $rolePermissions = $role->permissions->pluck('id')->toArray(); // Izin yang sudah dimiliki peran ini
+
+        return view('admin.access.role-permissions.edit', compact('role', 'allPermissions', 'rolePermissions'));
     }
 
+    // Menyimpan perubahan penugasan izin untuk suatu peran
     public function update(Request $request, Role $role)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'permissions' => 'array',
-            'permissions.*.permission' => 'required|string',
-            'permissions.*.allowed' => 'required|boolean',
+            'permissions.*' => 'exists:permissions,id',
         ]);
 
-        $role->permissions()->delete(); // Clear existing
+        // Sinkronisasi izin untuk peran ini
+        // Jika request 'permissions' null, itu berarti semua checkbox tidak dicentang, sehingga semua izin dihapus.
+        $role->permissions()->sync($validatedData['permissions'] ?? []);
 
-        foreach ($request->permissions as $perm) {
-            RolePermission::create([
-                'role_id' => $role->id,
-                'permission' => $perm['permission'],
-                'allowed' => $perm['allowed'],
-            ]);
-        }
-
-        return redirect()->route('role-permissions.index')->with('success', 'Permissions updated.');
+        return redirect()->route('core.role-permissions.index')->with('success', 'Izin peran berhasil diperbarui.');
     }
-
-    public function create() { abort(403); }
-    public function store(Request $request) { abort(403); }
-    public function show($id) { abort(403); }
-    public function destroy($id) { abort(403); }
 }

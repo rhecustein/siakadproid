@@ -29,8 +29,15 @@ class Role extends Model
     }
 
     // Relasi: satu role bisa dimiliki banyak user
+
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'role_has_permissions', 'role_id', 'permission_id');
+    }
+
+    // Relasi many-to-many ke User (melalui tabel pivot model_has_roles)
     public function users()
     {
-        return $this->hasMany(User::class, 'role_id');
+        return $this->morphedByMany(User::class, 'model', 'model_has_roles', 'role_id', 'model_id');
     }
 }

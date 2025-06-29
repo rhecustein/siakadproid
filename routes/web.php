@@ -238,6 +238,9 @@ use App\Http\Controllers\Core\{
     AttendanceScheduleController,
     FingerprintLogController,
     AiController,
+    PermissionsController,
+    UserRoleController,
+
 };
 
 Route::prefix('core')->name('core.')->group(function () {
@@ -252,6 +255,21 @@ Route::prefix('core')->name('core.')->group(function () {
         Route::post('/query-database', [AiController::class, 'queryDatabase'])->name('query.database');
         // Future feature routes can be added here
         Route::post('/future-feature', [AiController::class, 'futureFeatureExample'])->name('future.feature');
+    });
+
+    Route::prefix('access')->name('access.')->group(function () {
+        // Role Management
+        Route::resource('roles', RolesController::class); // CRUD untuk Peran
+        // Permission Management
+        Route::resource('permissions', PermissionsController::class); // CRUD untuk Izin
+        // Role-Permission Assignment
+        Route::get('role-permissions', [RolePermissionController::class, 'index'])->name('role-permissions.index');
+        Route::get('role-permissions/{role}/edit', [RolePermissionController::class, 'edit'])->name('role-permissions.edit');
+        Route::put('role-permissions/{role}', [RolePermissionController::class, 'update'])->name('role-permissions.update');
+        // User-Role Assignment
+        Route::get('user-roles', [UserRoleController::class, 'index'])->name('user-roles.index');
+        Route::get('user-roles/{user}/edit', [UserRoleController::class, 'edit'])->name('user-roles.edit');
+        Route::put('user-roles/{user}', [UserRoleController::class, 'update'])->name('user-roles.update');
     });
 
     Route::resource('roles', RolesController::class);
