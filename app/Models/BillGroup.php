@@ -10,14 +10,17 @@ class BillGroup extends Model
         'type',
         'name',
         'level_id',
+        'grade_id',
         'school_id',
-        'academic_year',
+        'academic_year_id',
         'gender',
         'tagihan_count',
         'amount_per_tagihan',
         'start_date',
         'end_date',
         'description',
+        'created_at',
+        'is_active',
     ];
 
     // Relasi ke Level (Kelas)
@@ -60,4 +63,21 @@ class BillGroup extends Model
         return $this->belongsTo(\App\Models\BillType::class, 'bill_type_id');
     }
 
+    //academicYear
+    public function academicYear()
+    {
+        return $this->belongsTo(AcademicYear::class);
+    }
+
+    //billType
+    public function billType()
+    {
+        return $this->belongsTo(BillType::class);
+    }
+
+    //gradelevel
+    public function gradeLevel()
+    {
+        return $this->belongsTo(GradeLevel::class);
+    }
 }

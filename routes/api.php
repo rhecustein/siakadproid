@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\FingerprintApiController;
 use App\Http\Controllers\Api\ParentManagementApiController;
 use App\Http\Controllers\Api\TeacherApiController;
 use App\Http\Controllers\Api\StudentManagementApiController;
+use App\Http\Controllers\Api\BillApiController;
 use Illuminate\Support\Facades\Auth;
 
     // --- Rute Login API Publik (TIDAK dilindungi middleware auth:sanctum) ---
@@ -91,5 +92,8 @@ use Illuminate\Support\Facades\Auth;
 
     // Endpoint baru untuk mencari siswa
     Route::get('/search-students', [StudentManagementApiController::class, 'searchStudents']); // PENTING: Rute ini
+
+     // Endpoint baru untuk memfilter siswa untuk generate tagihan masal
+    Route::get('/finance/bills/filter-students-for-generate', [BillApiController::class, 'filterStudentsForGenerate']); // PENTING: Rute ini
 });
    

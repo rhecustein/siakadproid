@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('level_id')->nullable()->constrained('levels')->nullOnDelete(); // jenjang sekolah
             $table->foreignId('grade_id')->nullable()->constrained('grade_levels')->nullOnDelete(); // kelas
             $table->foreignId('school_id')->nullable()->constrained('schools')->nullOnDelete(); // sekolah terkait
-            $table->string('academic_year')->nullable();   // Format: 2024-2025
+            $table->foreignId('academic_year_id')->nullable()->constrained('academic_years')->nullOnDelete();
             $table->enum('gender', ['male', 'female'])->nullable(); // Filter berdasarkan jenis kelamin
             $table->integer('tagihan_count')->nullable(); // untuk periode (6/12 tagihan)
             $table->decimal('amount_per_tagihan', 12, 2)->nullable(); // default per tagihan
