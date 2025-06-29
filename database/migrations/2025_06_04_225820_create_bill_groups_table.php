@@ -13,19 +13,25 @@ return new class extends Migration
     {
         Schema::create('bill_groups', function (Blueprint $table) {
             $table->id();
-            $table->string('type'); // 'periode' atau 'event'
-            $table->string('name'); // Contoh: "SPP SD Semester 1", "Study Tour 2025"
-            $table->foreignId('level_id')->nullable()->constrained('levels')->nullOnDelete(); // jenjang sekolah
-            $table->foreignId('grade_id')->nullable()->constrained('grade_levels')->nullOnDelete(); // kelas
-            $table->foreignId('school_id')->nullable()->constrained('schools')->nullOnDelete(); // sekolah terkait
-            $table->foreignId('academic_year_id')->nullable()->constrained('academic_years')->nullOnDelete();
-            $table->enum('gender', ['male', 'female'])->nullable(); // Filter berdasarkan jenis kelamin
-            $table->integer('tagihan_count')->nullable(); // untuk periode (6/12 tagihan)
-            $table->decimal('amount_per_tagihan', 12, 2)->nullable(); // default per tagihan
-            $table->date('start_date')->nullable(); // awal periode tagihan
-            $table->date('end_date')->nullable();   // akhir periode tagihan
+
+            $table->string('type'); // periode atau event
+            $table->string('name');
+            
+            $table->unsignedBigInteger('level_id')->nullable();
+            $table->unsignedBigInteger('grade_id')->nullable();
+            $table->unsignedBigInteger('school_id');
+            $table->unsignedBigInteger('academic_year_id');
+            $table->unsignedBigInteger('bill_type_id'); // <-- PASTIKAN INI ADA
+
+            $table->enum('gender', ['male', 'female'])->nullable();
+            $table->integer('tagihan_count')->default(1);
+            $table->integer('amount_per_tagihan')->default(0);
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+
             $table->text('description')->nullable();
             $table->boolean('is_active')->default(true);
+
             $table->timestamps();
         });
     }

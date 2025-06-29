@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\BillGroup;
+use App\Models\BillType;
 use App\Models\Branch;
 use App\Models\ExamType;
 use App\Models\GlAccount;
@@ -28,7 +29,7 @@ class DatabaseSeeder extends Seeder
             // BranchSeeder::class,
             RoomSeeder::class,
             // LevelSeeder::class,
-            // AcademicYearSeeder::class,
+            AcademicYearSeeder::class,
             InitialSetupSchoolSeeder::class,
             MajorSeeder::class,
             TeacherSeeder::class,
@@ -49,6 +50,7 @@ class DatabaseSeeder extends Seeder
             GlAccountSeeder::class,
             WalletSeeder::class,
             // GradeLevelSeeder::class,
+            BillTypeSeeder::class,
             BillGroupSeeder::class,
              // Struktur utama
             CanteenSeeder::class,

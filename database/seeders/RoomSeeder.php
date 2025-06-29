@@ -150,6 +150,7 @@ class RoomSeeder extends Seeder
         // STEP 5: Grade SMP
         foreach ([7, 8, 9] as $grade) {
             GradeLevel::firstOrCreate([
+                'name' => "Kelas $grade",
                 'level_id' => $levelSMP->id,
                 'grade' => $grade,
             ], [

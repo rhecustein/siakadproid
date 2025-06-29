@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('grade_levels', function (Blueprint $table) {
             $table->id();
             $table->foreignId('level_id')->constrained()->onDelete('cascade');
+            $table->string('name'); // Jika kolomnya memang 'name', berarti ada masalah data.
             $table->integer('grade'); // e.g. 7, 8, 10
             $table->string('label');  // e.g. SMP7, SMA10
             $table->string('description')->nullable();
