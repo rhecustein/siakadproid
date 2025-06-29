@@ -11,14 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bill_types', function (Blueprint $table) {
+       Schema::create('bill_types', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
 
             $table->string('name')->unique();
             $table->string('code')->unique();
             $table->string('description')->nullable();
-            $table->boolean('is_active')->default(true);
+
+            // --- KOLOM BARU YANG DITAMBAHKAN ---
+            $table->boolean('is_online_payment')->default(false)->comment('Apakah tipe tagihan ini bisa dibayar online');
+            $table->boolean('is_monthly')->default(false)->comment('Apakah tipe tagihan ini adalah tagihan bulanan');
+            // --- AKHIR KOLOM BARU ---
+
+            $table->boolean('is_active')->default(true); // Pastikan ini ada dan tetap
 
             $table->timestamps();
         });

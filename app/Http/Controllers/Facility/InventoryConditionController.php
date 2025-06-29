@@ -8,10 +8,26 @@ use Illuminate\Http\Request;
 
 class InventoryConditionController extends Controller
 {
-    public function index()
+    public function index(Request $request) // Tambahkan Request $request untuk filter
     {
-        $conditions = InventoryCondition::all();
-        return view('admin.masters.inventories.conditions.index', compact('conditions'));
+        $query = InventoryCondition::query();
+
+        // Filter berdasarkan pencarian nama
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        $conditions = $query->paginate(10)->appends($request->query());
+
+        // Menghitung data untuk count cards
+        $totalConditions = InventoryCondition::count();
+        // Asumsi nama kondisi di database
+        $goodConditions = InventoryCondition::where('name', 'like', '%baik%')->count();
+        $damagedConditions = InventoryCondition::where('name', 'like', '%rusak%')->count();
+        $inRepairConditions = InventoryCondition::where('name', 'like', '%perbaikan%')->count();
+
+
+        return view('admin.masters.inventories.conditions.index', compact('conditions', 'totalConditions', 'goodConditions', 'damagedConditions', 'inRepairConditions'));
     }
 
     public function create()
@@ -21,36 +37,52 @@ class InventoryConditionController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:100',
-            'description' => 'nullable|string',
+        $validatedData = $request->validate([
+            'name'          => 'required|string|max:100|unique:inventory_conditions,name',
+            'description'   => 'nullable|string',
+            // Tambahkan kolom lain jika ada di migrasi dan form, misal 'is_good'
+            // 'is_good' => 'boolean',
         ]);
 
-        InventoryCondition::create($request->all());
-        return redirect()->route('inventory-conditions.index')->with('success', 'Kondisi inventaris berhasil ditambahkan.');
+        // Tangani nilai boolean dari checkbox jika ada
+        // $validatedData['is_good'] = $request->has('is_good');
+
+        InventoryCondition::create($validatedData);
+
+        return redirect()->route('facility.inventory-conditions.index')->with('success', 'Kondisi inventaris berhasil ditambahkan.');
     }
 
-    public function edit(InventoryCondition $inventoryCondition)
+    public function edit(InventoryCondition $inventoryCondition) // Route Model Binding sudah benar
     {
-        $inventoryCondition = InventoryCondition::find($inventoryCondition->id);
-        
+        // Baris ini tidak diperlukan karena $inventoryCondition sudah diinject oleh Route Model Binding
+        // $inventoryCondition = InventoryCondition::find($inventoryCondition->id);
+
         return view('admin.masters.inventories.conditions.edit', compact('inventoryCondition'));
     }
 
-    public function update(Request $request, InventoryCondition $inventoryCondition)
+    public function update(Request $request, InventoryCondition $inventoryCondition) // Route Model Binding sudah benar
     {
-        $request->validate([
-            'name' => 'required|string|max:100',
-            'description' => 'nullable|string',
+        $validatedData = $request->validate([
+            'name'          => ['required', 'string', 'max:100', Rule::unique('inventory_conditions', 'name')->ignore($inventoryCondition->id)],
+            'description'   => 'nullable|string',
+            // Tambahkan kolom lain jika ada di migrasi dan form, misal 'is_good'
+            // 'is_good' => 'boolean',
         ]);
 
-        $inventoryCondition->update($request->all());
-        return redirect()->route('inventory-conditions.index')->with('success', 'Kondisi inventaris berhasil diperbarui.');
+        // Tangani nilai boolean dari checkbox jika ada
+        // $validatedData['is_good'] = $request->has('is_good');
+
+        $inventoryCondition->update($validatedData);
+        return redirect()->route('facility.inventory-conditions.index')->with('success', 'Kondisi inventaris berhasil diperbarui.');
     }
 
-    public function destroy(InventoryCondition $inventoryCondition)
+    public function destroy(InventoryCondition $inventoryCondition) // Route Model Binding sudah benar
     {
-        $inventoryCondition->delete();
-        return redirect()->route('inventory-conditions.index')->with('success', 'Kondisi inventaris berhasil dihapus.');
+        try {
+            $inventoryCondition->delete();
+            return redirect()->route('facility.inventory-conditions.index')->with('success', 'Kondisi inventaris berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('facility.inventory-conditions.index')->with('error', 'Gagal menghapus kondisi inventaris: ' . $e->getMessage());
+        }
     }
 }

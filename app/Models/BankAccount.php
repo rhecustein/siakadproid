@@ -10,7 +10,7 @@ class BankAccount extends Model
     protected $fillable = [
         'uuid', 'account_number', 'account_holder', 'bank_name', 'bank_code',
         'school', 'online_payment', 'for_students', 'for_teachers',
-        'for_male', 'for_female', 'can_pay_bills', 'can_save', 'can_donate', 'is_active'
+        'for_male', 'for_female', 'can_pay_bills', 'can_save', 'can_donate', 'is_active','school_id'
     ];
 
     protected static function booted()
@@ -18,5 +18,10 @@ class BankAccount extends Model
         static::creating(function ($model) {
             $model->uuid = (string) Str::uuid();
         });
+    }
+
+    public function school()
+    {
+        return $this->belongsTo(School::class); // Asumsi foreign key 'school_id'
     }
 }

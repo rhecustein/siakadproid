@@ -15,6 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name'); // Nama tipe barang, contoh: Elektronik, Furniture
             $table->boolean('is_electronic')->default(false); // Apakah termasuk barang elektronik
+
+            // --- KOLOM BARU YANG DITAMBAHKAN ---
+            $table->boolean('is_consumable')->default(false)->comment('Apakah tipe inventaris ini habis pakai');
+            // --- AKHIR KOLOM BARU ---
+
             $table->integer('economic_life')->nullable(); // Umur ekonomis default (tahun)
             $table->timestamps();
         });

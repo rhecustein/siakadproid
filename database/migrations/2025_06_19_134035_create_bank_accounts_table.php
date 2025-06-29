@@ -19,8 +19,9 @@ return new class extends Migration
             $table->string('account_holder');
             $table->string('bank_name');
             $table->string('bank_code')->nullable();
-
-            $table->string('school')->nullable(); // e.g. Al Bahjah SD/SMP/SMA
+            
+            $table->unsignedBigInteger('school_id');
+            $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
 
             $table->boolean('online_payment')->default(false);
             $table->boolean('for_students')->default(false);

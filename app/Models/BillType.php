@@ -13,6 +13,11 @@ class BillType extends Model
         'code',
         'description',
         'is_active',
+        'is_monthly',
+        'is_online_payment',
+        'is_cash_payment',
+        'is_installment_payment',
+        
     ];
 
     protected static function booted()

@@ -35,7 +35,7 @@
     <form action="{{ route('core.students.store') }}" method="POST" class="space-y-6" enctype="multipart/form-data">
         @csrf
 
-        {{-- Section: Informasi Dasar --}}
+        {{-- Section: Informasi Dasar Siswa --}}
         <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center border-b pb-2">
             <i class="fas fa-info-circle mr-2 text-blue-600"></i> Informasi Dasar Siswa
         </h3>
@@ -194,6 +194,7 @@
                 <label for="user_id" class="block text-sm font-semibold text-gray-800 mt-4 mb-1">Pilih Pengguna</label>
                 <select name="user_id" id="user_id" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
                     <option value="">— Pilih Akun Pengguna —</option>
+                    {{-- Options will be dynamically loaded/filtered by JS --}}
                     @foreach ($availableUsers as $user)
                         <option value="{{ $user->id }}" data-name="{{ strtolower($user->name) }}" data-email="{{ strtolower($user->email) }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
                             {{ $user->name }} ({{ $user->email }})
@@ -223,7 +224,7 @@
                         class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
                     <option value="">— Pilih Orang Tua —</option>
                     @foreach ($parents as $parent)
-                        <option value="{{ $parent->id }}" data-name="{{ strtolower($parent->name) }}" {{ old('parent_id') == $parent->id ? 'selected' : '' }}>
+                        <option value="{{ $parent->id }}" data-name="{{ strtolower($parent->name) }}" data-relationship="{{ strtolower($parent->relationship) }}" {{ old('parent_id') == $parent->id ? 'selected' : '' }}>
                             {{ $parent->name }} ({{ $parent->relationship }})
                         </option>
                     @endforeach
@@ -263,11 +264,25 @@
         </div>
     </form>
 </div>
+
 @endsection
 
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // --- Token Acquisition (from layouts/app.blade.php) ---
+        // This script runs in the child view, but the token is flashed to session
+        // and picked up by a script in layouts/app.blade.php which then stores it in localStorage.
+        // So, we simply retrieve it from localStorage here.
+        const bearerToken = localStorage.getItem('sanctum_api_token');
+
+        if (!bearerToken) {
+            console.warn('Sanctum API Token not found in localStorage. API requests may fail.');
+            // Optionally, you could display a user-friendly warning or redirect to login.
+            // alert('Token autentikasi tidak ditemukan. Silakan login ulang.');
+            // window.location.href = '{{ route('login') }}';
+        }
+
         // --- User Account Section Logic ---
         const userIdOption = document.getElementById('user_id_option');
         const existingUserSection = document.getElementById('existing_user_section');
@@ -280,8 +295,8 @@
             if (userIdOption.value === 'select_existing') {
                 existingUserSection.classList.remove('hidden');
                 newUserEmailSection.classList.add('hidden');
-                document.getElementById('email_new_user').removeAttribute('required'); // Remove required for new user email
-                document.getElementById('user_id').setAttribute('required', 'required'); // Make user_id required if selecting existing
+                document.getElementById('email_new_user').removeAttribute('required'); // Make email_new_user NOT required
+                userIdSelect.setAttribute('required', 'required'); // Make user_id required
 
                 if (availableUsersCache.length === 0) {
                     fetchAvailableUsers(); // Fetch if not already cached
@@ -291,8 +306,8 @@
             } else { // create_new
                 existingUserSection.classList.add('hidden');
                 newUserEmailSection.classList.remove('hidden');
-                document.getElementById('email_new_user').setAttribute('required', 'required'); // Make new user email required
-                document.getElementById('user_id').removeAttribute('required'); // Remove required for user_id
+                document.getElementById('email_new_user').setAttribute('required', 'required'); // Make email_new_user required
+                userIdSelect.removeAttribute('required'); // Make user_id NOT required
 
                 userSearchInput.value = ''; // Clear search when hiding
                 userIdSelect.innerHTML = '<option value="">— Pilih Akun Pengguna —</option>'; // Clear options
@@ -304,22 +319,26 @@
             userSearchInput.disabled = true;
 
             try {
-                // This API route needs to be defined in your routes/api.php
+                if (!bearerToken) {
+                    throw new Error("Token autentikasi tidak tersedia untuk permintaan API.");
+                }
                 const response = await fetch('/api/available-users-for-student', {
                     headers: {
                         'Accept': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Authorization': `Bearer ${bearerToken}` // Gunakan token dari localStorage
                     }
                 });
                 if (!response.ok) {
-                    throw new Error('Gagal memuat pengguna yang tersedia.');
+                    const errorBody = await response.json();
+                    throw new Error(`Gagal memuat pengguna: ${errorBody.message || response.statusText}`);
                 }
                 availableUsersCache = await response.json();
                 renderUserOptions(availableUsersCache);
-            } catch (error) {
-                console.error('Error fetching available users:', error);
-                userIdSelect.innerHTML = '<option value="">Gagal memuat. Coba lagi.</option>';
+            } catch (err) {
+                console.error('Error fetching available users:', err.message);
+                userIdSelect.innerHTML = `<option value="">${err.message}. Coba lagi.</option>`;
             } finally {
                 userSearchInput.disabled = false;
             }
@@ -361,22 +380,26 @@
             parentSearchInput.disabled = true;
 
             try {
-                // This API route needs to be defined in your routes/api.php
-                const response = await fetch('/api/available-parents-for-student', { // API for searching parents
+                if (!bearerToken) {
+                    throw new Error("Token autentikasi tidak tersedia untuk permintaan API.");
+                }
+                const response = await fetch('/api/available-parents-for-student', {
                     headers: {
                         'Accept': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Authorization': `Bearer ${bearerToken}` // Gunakan token dari localStorage
                     }
                 });
                 if (!response.ok) {
-                    throw new Error('Gagal memuat daftar orang tua.');
+                    const errorBody = await response.json();
+                    throw new Error(`Gagal memuat orang tua: ${errorBody.message || response.statusText}`);
                 }
                 availableParentsCache = await response.json();
                 renderParentOptions(availableParentsCache);
-            } catch (error) {
-                console.error('Error fetching available parents:', error);
-                parentIdSelect.innerHTML = '<option value="">Gagal memuat. Coba lagi.</option>';
+            } catch (err) {
+                console.error('Error fetching available parents:', err.message);
+                parentIdSelect.innerHTML = `<option value="">${err.message}. Coba lagi.</option>`;
             } finally {
                 parentSearchInput.disabled = false;
             }
@@ -400,7 +423,6 @@
                 option.textContent = `${parent.name} (${parent.relationship})`;
                 option.dataset.name = parent.name ? parent.name.toLowerCase() : '';
                 option.dataset.relationship = parent.relationship ? parent.relationship.toLowerCase() : '';
-                option.selected = "{{ old('parent_id') }}" == parent.id; // Retain old selection
                 parentIdSelect.appendChild(option);
             });
             const oldParentId = "{{ old('parent_id') }}";
@@ -409,15 +431,13 @@
             }
         }
 
-
         // Event Listeners
         userIdOption.addEventListener('change', toggleUserSection);
         userSearchInput.addEventListener('input', filterUserOptions);
         parentSearchInput.addEventListener('input', filterParentOptions);
 
-
         // Initial calls on page load
-        toggleUserSection(); // For user account section
+        toggleUserSection(); // For user account section, also triggers initial user fetch
         fetchAvailableParents(); // For parent search dropdown
     });
 </script>

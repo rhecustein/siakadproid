@@ -18,23 +18,43 @@ class InventoryController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('code', 'like', '%' . $request->search . '%');
+                  ->orWhere('code', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%'); // Tambah filter deskripsi
             });
         }
 
-        if ($request->filled('type')) {
-            $query->where('inventory_type_id', $request->type);
+        // Filter berdasarkan Tipe Inventaris
+        if ($request->filled('type_id')) { // Sesuaikan nama parameter di URL/form
+            $query->where('inventory_type_id', $request->type_id);
         }
 
-        if ($request->filled('condition')) {
-            $query->where('inventory_condition_id', $request->condition);
+        // Filter berdasarkan Kondisi Inventaris
+        if ($request->filled('condition_id')) { // Sesuaikan nama parameter di URL/form
+            $query->where('inventory_condition_id', $request->condition_id);
+        }
+
+        // Filter berdasarkan Ruangan
+        if ($request->filled('room_id')) { // Sesuaikan nama parameter di URL/form
+            $query->where('room_id', $request->room_id);
         }
 
         $inventories = $query->paginate(10)->appends($request->query());
+
+        // Menghitung data untuk count cards
+        $totalInventories = Inventory::count();
+        $inventoriesInRooms = Inventory::whereNotNull('room_id')->count();
+        // Asumsi ada InventoryCondition dengan nama 'Baik' atau ID tertentu untuk kondisi baik
+        $goodConditionInventories = Inventory::whereHas('condition', function($q) {
+            $q->where('name', 'like', '%baik%'); // Sesuaikan dengan nama kondisi 'baik' di DB
+        })->count();
+        $totalQuantity = Inventory::sum('quantity');
+
+        // Ambil semua data master untuk filter dropdown
         $types = InventoryType::all();
         $conditions = InventoryCondition::all();
+        $rooms = Room::all(); // Ambil semua ruangan untuk dropdown
 
-        return view('admin.masters.inventories.index', compact('inventories', 'types', 'conditions'));
+        return view('admin.masters.inventories.index', compact('inventories', 'types', 'conditions', 'rooms', 'totalInventories', 'inventoriesInRooms', 'goodConditionInventories', 'totalQuantity'));
     }
 
     public function create()
@@ -48,19 +68,32 @@ class InventoryController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'code' => 'required|string|unique:inventories,code',
-            'room_id' => 'required|exists:rooms,id',
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|max:50|unique:inventories,code',
+            'room_id' => 'nullable|exists:rooms,id', // Diubah menjadi nullable sesuai kebutuhan di view
             'inventory_type_id' => 'required|exists:inventory_types,id',
             'inventory_condition_id' => 'nullable|exists:inventory_conditions,id',
             'quantity' => 'required|integer|min:1',
+            'description' => 'nullable|string', // Tambahkan validasi jika ada di form
+            'purchase_date' => 'nullable|date', // Tambahkan validasi jika ada di form
+            'notes' => 'nullable|string', // Tambahkan validasi jika ada di form
+
+            // Kolom boolean
             'is_electronic' => 'boolean',
-            'acquired_at' => 'nullable|date',
-            'economic_life' => 'nullable|integer|min:1',
+            'is_consumable' => 'boolean', // Asumsi ada kolom ini di DB dan form
+            'is_active' => 'boolean', // Asumsi ada kolom ini di DB dan form
         ]);
 
-        Inventory::create($request->all());
+        // Tangani nilai boolean dari checkbox (karena tidak terkirim jika tidak dicentang)
+        $validatedData['is_electronic'] = $request->has('is_electronic');
+        $validatedData['is_consumable'] = $request->has('is_consumable');
+        $validatedData['is_active'] = $request->has('is_active');
+
+        // Jika Anda menggunakan UUID di model Inventory, pastikan model tersebut meng-handle-nya
+        // atau tambahkan: $validatedData['uuid'] = Str::uuid();
+
+        Inventory::create($validatedData);
         return redirect()->route('facility.inventories.index')->with('success', 'Inventaris berhasil ditambahkan.');
     }
 
@@ -75,25 +108,39 @@ class InventoryController extends Controller
 
     public function update(Request $request, Inventory $inventory)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'code' => 'required|string|unique:inventories,code,' . $inventory->id,
-            'room_id' => 'required|exists:rooms,id',
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => ['required', 'string', 'max:50', Rule::unique('inventories', 'code')->ignore($inventory->id)],
+            'room_id' => 'nullable|exists:rooms,id',
             'inventory_type_id' => 'required|exists:inventory_types,id',
             'inventory_condition_id' => 'nullable|exists:inventory_conditions,id',
             'quantity' => 'required|integer|min:1',
+            'description' => 'nullable|string',
+            'purchase_date' => 'nullable|date',
+            'notes' => 'nullable|string',
+
+            // Kolom boolean
             'is_electronic' => 'boolean',
-            'acquired_at' => 'nullable|date',
-            'economic_life' => 'nullable|integer|min:1',
+            'is_consumable' => 'boolean',
+            'is_active' => 'boolean',
         ]);
 
-        $inventory->update($request->all());
+        // Tangani nilai boolean dari checkbox
+        $validatedData['is_electronic'] = $request->has('is_electronic');
+        $validatedData['is_consumable'] = $request->has('is_consumable');
+        $validatedData['is_active'] = $request->has('is_active');
+
+        $inventory->update($validatedData);
         return redirect()->route('facility.inventories.index')->with('success', 'Inventaris berhasil diperbarui.');
     }
 
     public function destroy(Inventory $inventory)
     {
-        $inventory->delete();
-        return redirect()->route('facility.inventories.index')->with('success', 'Inventaris berhasil dihapus.');
+        try {
+            $inventory->delete();
+            return redirect()->route('facility.inventories.index')->with('success', 'Inventaris berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('facility.inventories.index')->with('error', 'Gagal menghapus inventaris: ' . $e->getMessage());
+        }
     }
 }

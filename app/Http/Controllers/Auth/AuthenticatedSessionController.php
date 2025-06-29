@@ -28,16 +28,13 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        // Temukan user berdasarkan email yang dicoba login
         $user = User::where('email', $request->email)->first();
 
-        // Jika user tidak ditemukan, biarkan authenticate() di bawah yang menangani error
         if (!$user) {
-            $request->authenticate(); // Ini akan throw ValidationException jika kredensial salah
-            return redirect()->route('login'); // Fallback jika validasi custom gagal sebelum authenticate
+            $request->authenticate();
+            return redirect()->route('login');
         }
 
-        // Nonaktifkan sesi aktif sebelumnya untuk user ini
         SessionLogin::where('user_id', $user->id)
             ->where('is_active', true)
             ->update([
@@ -45,50 +42,43 @@ class AuthenticatedSessionController extends Controller
                 'logged_out_at' => now(),
             ]);
 
-        // Proses autentikasi web
-        $request->authenticate(); // Ini akan mencoba login dan mengatur Auth::user()
-        $request->session()->regenerate(); // Regenerate sesi untuk keamanan
+        $request->authenticate();
+        $request->session()->regenerate();
 
-        // --- TAMBAHKAN PEMBUATAN TOKEN SANCTUM DI SINI ---
-        // Hapus token lama user jika Anda hanya ingin satu token aktif per user (opsional, tapi disarankan)
-        $user->tokens()->delete(); // Menghapus semua personal access token yang ada untuk user ini
+        $authenticatedUser = Auth::user();
 
-        // Buat token Sanctum baru
-        // Berikan nama token yang deskriptif, misalnya 'auth_token' atau 'web_login_token'
-        $token = $user->createToken('web_login_token')->plainTextToken;
+        $authenticatedUser->tokens()->delete();
 
-        // Anda bisa menyimpan token ini di session jika frontend Anda butuh mengambilnya
-        // atau jika Anda ingin melewatkannya sebagai bagian dari respons JSON untuk SPA
-        // Session::put('sanctum_token', $token);
+        $fullToken = $authenticatedUser->createToken('web_login_token', ['server:web'])->plainTextToken;
+        $onlyToken = explode('|', $fullToken, 2)[1] ?? $fullToken;
 
-        // Catat login baru
+        Session::flash('sanctum_token', $onlyToken);
+
         SessionLogin::create([
-            'user_id'          => $user->id,
+            'user_id'          => $authenticatedUser->id,
             'session_id'       => Session::getId(),
             'ip_address'       => $request->ip(),
             'user_agent'       => $request->userAgent(),
             'device'           => $this->detectDevice($request),
-            'city'             => null, // Sesuaikan jika Anda punya layanan geolokasi
-            'province'         => null, // Sesuaikan
-            'latitude'         => null, // Sesuaikan
-            'longitude'        => null, // Sesuaikan
+            'city'             => null,
+            'province'         => null,
+            'latitude'         => null,
+            'longitude'        => null,
             'success'          => true,
             'logged_in_at'     => now(),
             'last_activity_at' => now(),
             'is_active'        => true,
         ]);
 
-        // Langsung arahkan ke dashboard
-        return redirect()->intended(route('core.dashboard.index', absolute: false)); // Menggunakan intended() lebih baik
-
+        return redirect()->intended(route('core.dashboard.index', absolute: false));
     }
 
     /**
-     * Logout dan akhiri sesi login aktif.
+     * Logout user dari sesi web dan nonaktifkan token Sanctum yang terkait.
      */
     public function destroy(Request $request): RedirectResponse
     {
-        // Nonaktifkan entri SessionLogin yang aktif untuk sesi ini
+        // Nonaktifkan entri SessionLogin yang aktif untuk sesi ini.
         SessionLogin::where('user_id', Auth::id())
             ->where('session_id', Session::getId())
             ->update([
@@ -96,26 +86,35 @@ class AuthenticatedSessionController extends Controller
                 'logged_out_at' => now(),
             ]);
 
-        // Hapus token Sanctum terkait sesi ini (opsional, tapi bagus untuk keamanan)
-        // Jika token dibuat per sesi, Anda mungkin ingin menghapusnya saat logout
-        // Auth::user()->tokens()->where('name', 'web_login_token')->delete();
+        // Opsional: Hapus token Sanctum yang sedang digunakan user saat logout.
+        // Ini adalah praktik keamanan yang baik.
+        // currentAccessToken() akan mengembalikan token yang sedang digunakan untuk request ini.
+        if (Auth::check() && Auth::user()->currentAccessToken()) {
+            Auth::user()->currentAccessToken()->delete();
+        }
 
-        Auth::guard('web')->logout(); // Logout dari guard 'web'
-        $request->session()->invalidate(); // Invalidate sesi
-        $request->session()->regenerateToken(); // Regenerate CSRF token
+        // Logout user dari guard 'web'.
+        Auth::guard('web')->logout();
 
+        // Invalidate sesi user untuk menghapus semua data sesi.
+        $request->session()->invalidate();
+
+        // Regenerate CSRF token untuk mencegah serangan CSRF pada form berikutnya.
+        $request->session()->regenerateToken();
+
+        // Arahkan user ke halaman utama atau halaman login.
         return redirect('/');
     }
 
     /**
-     * Deteksi tipe device berdasarkan User Agent.
+     * Helper method untuk mendeteksi tipe perangkat dari User Agent.
      */
     private function detectDevice(Request $request): string
     {
         $agent = $request->userAgent();
-        if (Str::contains($agent, ['iPhone', 'Android', 'Mobile', 'iOS'])) { // Tambah iOS
+        if (Str::contains($agent, ['iPhone', 'Android', 'Mobile', 'iOS', 'Windows Phone'])) {
             return 'mobile';
-        } elseif (Str::contains($agent, ['Windows', 'Macintosh', 'Linux', 'X11', 'CrOS'])) { // Tambah Linux/ChromeOS
+        } elseif (Str::contains($agent, ['Windows', 'Macintosh', 'Linux', 'X11', 'CrOS', 'Ubuntu', 'Firefox/'])) {
             return 'desktop';
         }
         return 'unknown';

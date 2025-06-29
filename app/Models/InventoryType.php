@@ -6,7 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class InventoryType extends Model
 {
-    protected $fillable = ['name', 'is_electronic', 'economic_life'];
+    protected $fillable = [
+    'name', 
+    'is_electronic', 
+    'economic_life',
+    'is_consumable',
+    ];
 
     public function inventories()
     {
