@@ -240,10 +240,13 @@ use App\Http\Controllers\Core\{
     AiController,
     PermissionsController,
     UserRoleController,
+    DataVisualizationController,
 
 };
 
 Route::prefix('core')->name('core.')->group(function () {
+
+    Route::get('/map', [DataVisualizationController::class, 'index'])->name('map.index');
 
     // AI Module Routes
     Route::prefix('ai')->name('ai.')->group(function () {

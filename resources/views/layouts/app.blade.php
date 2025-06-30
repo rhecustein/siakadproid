@@ -197,6 +197,7 @@
             border-radius: 0.75rem; /* rounded-xl for slight square */
         }
     </style>
+@stack('styles')
 </head>
 
 <body class="bg-white text-neutral-800 antialiased font-sans">

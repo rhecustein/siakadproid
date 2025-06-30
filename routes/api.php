@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\ParentManagementApiController;
 use App\Http\Controllers\Api\TeacherApiController;
 use App\Http\Controllers\Api\StudentManagementApiController;
 use App\Http\Controllers\Api\BillApiController;
+use App\Http\Controllers\Core\DataVisualizationController;
 use Illuminate\Support\Facades\Auth;
 
     // --- Rute Login API Publik (TIDAK dilindungi middleware auth:sanctum) ---
@@ -95,5 +96,15 @@ use Illuminate\Support\Facades\Auth;
 
      // Endpoint baru untuk memfilter siswa untuk generate tagihan masal
     Route::get('/finance/bills/filter-students-for-generate', [BillApiController::class, 'filterStudentsForGenerate']); // PENTING: Rute ini
+
+    Route::get('/school-data', [DataVisualizationController::class, 'getSchoolData'])->name('schools.data');
+
+    /**
+     * API Endpoint untuk mendapatkan data lokasi dan demografi siswa.
+     * Mendukung filter melalui query string (?academic_year_id=1&school_id=2, dll.)
+     * URL: /api/statistics/student-data
+     * Nama Route: api.statistics.students.data
+     */
+    Route::get('/student-data', [DataVisualizationController::class, 'getStudentData'])->name('students.data');
 });
    

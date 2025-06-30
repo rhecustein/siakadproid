@@ -16,6 +16,11 @@
             {{ Route::is('dashboard') ? 'sidebar-link-active-indicator' : '' }}">
             Dashboard
         </a>
+         <a href="{{ route('core.map.index') }}"
+            class="block px-4 py-2 rounded-lg hover:bg-gray-800 hover:text-white transition-sidebar-item
+            {{ Route::is('core.map.index') ? 'sidebar-link-active-indicator' : '' }}">
+            Statistik
+        </a>
 
         {{-- Group Menu items in details for expand/collapse --}}
         @if ($role === 'admin')
@@ -255,7 +260,7 @@
                     </svg>
                 </summary>
                 <div class="mt-1 ml-4 border-l border-gray-700">
-                    <a href="#" class="block px-4 py-2 hover:bg-gray-700 rounded-r-lg transition-sidebar-item">Role & Akses</a>
+                    <a href="{{ route('core.access.roles.index') }}" class="block px-4 py-2 hover:bg-gray-700 rounded-r-lg transition-sidebar-item">Role & Akses</a>
                     <a href="#" class="block px-4 py-2 hover:bg-gray-700 rounded-r-lg transition-sidebar-item">Pengaturan Sistem</a>
                     <a href="#" class="block px-4 py-2 hover:bg-gray-700 rounded-r-lg transition-sidebar-item">Log Aktivitas</a>
                 </div>

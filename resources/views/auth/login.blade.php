@@ -9,10 +9,11 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body class="bg-gradient-to-br from-neutral-50 to-blue-50 text-neutral-800 antialiased font-sans relative overflow-hidden">
-    <div class="login-bg-animation"></div>
+    <div class="login-bg-animation"></div> {{-- Latar belakang animasi --}}
 
-    <div class="flex min-h-screen relative z-10 p-4 sm:p-8 lg:p-0">
-        <div class="w-full lg:w-1/2 flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 bg-white bg-opacity-95 lg:bg-opacity-90 backdrop-blur-sm rounded-3xl lg:rounded-none shadow-2xl lg:shadow-none transition-all duration-300">
+    <div class="flex min-h-screen relative z-10 lg:p-0"> {{-- Hapus p-4 sm:p-8 dari sini karena container di dalamnya akan memiliki padding --}}
+        {{-- Konten Formulir Login (Sisi Kiri) --}}
+        <div class="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 bg-white bg-opacity-95 lg:bg-opacity-90 backdrop-blur-sm lg:rounded-none shadow-2xl lg:shadow-none transition-all duration-300 relative z-20 rounded-3xl"> {{-- Tambahkan z-20 dan rounded-3xl di sini --}}
             <div class="w-full max-w-md p-6 sm:p-8 bg-white rounded-3xl shadow-xl border border-gray-100 transform -translate-y-4 animate-fade-in-up animate-delay-200">
                 <div class="mb-8 text-center">
                     <img src="{{ asset('images/logo.png') }}" alt="Logo Al-Bahjah" class="w-24 mx-auto mb-5 ai-logo-glow">
@@ -94,6 +95,29 @@
                 </div>
             </div>
         </div>
+
+        {{-- Visual Panel (Sisi Kanan) --}}
+        <div class="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-blue-700 to-indigo-800 login-visual-panel items-center justify-center">
+            {{-- Background Grid/Lines --}}
+            <div class="visual-grid-overlay"></div>
+
+            {{-- Abstract Shapes / Blobs --}}
+            <div class="visual-circle-1"></div>
+            <div class="visual-circle-2"></div>
+
+            {{-- Main Content / Icon (centered) --}}
+            <div class="relative z-10 text-center">
+                <svg class="w-48 h-48 mx-auto mb-6 text-white visual-pulse-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                </svg>
+                <h2 class="text-4xl font-extrabold text-white mb-4 drop-shadow-md animate-fade-in animate-delay-300">
+                    SIAKAD Modern<br>Berbasis AI
+                </h2>
+                <p class="text-lg text-white text-opacity-80 max-w-sm mx-auto animate-fade-in animate-delay-400">
+                    Platform cerdas untuk mengelola pendidikan dengan efisiensi dan insight data.
+                </p>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -130,6 +154,11 @@
             const phone = document.getElementById('phone_wa').value;
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+            // Tambahkan loading state
+            const sendButton = waStep1.querySelector('button');
+            sendButton.innerHTML = '<svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Mengirim...';
+            sendButton.disabled = true;
+
             try {
                 const response = await fetch('/api/whatsapp/send-otp', {
                     method: 'POST',
@@ -152,6 +181,9 @@
                 console.error('Error sending OTP:', error);
                 waErrorMessage.textContent = 'Tidak dapat mengirim kode. Periksa koneksi Anda.';
                 waErrorMessage.classList.remove('hidden');
+            } finally {
+                sendButton.innerHTML = 'Kirim Kode Akses';
+                sendButton.disabled = false;
             }
         }
 
@@ -164,6 +196,11 @@
             const otp = document.getElementById('otp_wa').value;
             const rememberWa = document.querySelector('input[name="remember_wa"]:checked').value;
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // Tambahkan loading state
+            const verifyButton = waStep2.querySelector('button[type="submit"]');
+            verifyButton.innerHTML = '<svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memverifikasi...';
+            verifyButton.disabled = true;
 
             try {
                 const response = await fetch('/api/whatsapp/verify-otp', {
@@ -187,13 +224,20 @@
                 console.error('Error verifying OTP:', error);
                 waErrorMessage.textContent = 'Tidak dapat terhubung ke server. Periksa koneksi Anda.';
                 waErrorMessage.classList.remove('hidden');
+            } finally {
+                verifyButton.innerHTML = 'Masuk dengan WhatsApp';
+                verifyButton.disabled = false;
             }
         });
 
-        if (document.querySelector('#form-email .text-red-600')) {
+        // Initialize active tab based on error presence
+        if (document.querySelector('#form-email .text-red-600') && !document.querySelector('#form-email .hidden')) {
             setActiveTab(tabEmail, tabWA, formEmail, formWA);
-        } else if (document.querySelector('#form-wa .text-red-600')) {
+        } else if (document.querySelector('#form-wa .text-red-600') && !document.querySelector('#form-wa .hidden')) {
             setActiveTab(tabWA, tabEmail, formWA, formEmail);
+        } else {
+            // Default to email tab if no errors
+            setActiveTab(tabEmail, tabWA, formEmail, formWA);
         }
     </script>
 </body>
