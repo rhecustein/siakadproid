@@ -68,7 +68,7 @@ class ParentManagementController extends Controller
     {
         $rules = [
             'name'         => 'required|string|max:100',
-            'phone'        => 'required|string|max:20|unique:student_parents,phone', // Pastikan tabel 'student_parents'
+            'phone'        => 'required|string|max:20|unique:parents,phone', // Perbaiki: gunakan 'parents'
             'gender'       => 'nullable|in:L,P',
             'relationship' => 'nullable|in:ayah,ibu,wali',
             'address'      => 'nullable|string',
@@ -79,14 +79,14 @@ class ParentManagementController extends Controller
         $userEmail = $request->email; // Default untuk user baru atau jika tidak ada email yang diberikan untuk user yang ada
 
         if ($request->user_id_option === 'create_new') {
-            $rules['email'] = 'required|email|unique:users,email'; // Email wajib dan unik jika buat baru
-            $request->validate($rules);
+            $rules['email_new_user'] = 'required|email|unique:users,email'; // Email wajib dan unik jika buat baru
+            $request->validate($rules); // Validasi awal untuk create_new
 
             // Buat akun user baru
             $user = User::create([
                 'uuid'     => Str::uuid(),
                 'name'     => $request->name,
-                'email'    => $request->email,
+                'email'    => $request->email_new_user, // Ambil dari email_new_user
                 'username' => strtolower(Str::slug($request->name, '_')) . Str::random(4), // Username yang lebih unik
                 'password' => Hash::make('password'), // default password yang aman
                 'role_id'  => Role::where('name', 'orang_tua')->value('id'), // Pastikan role 'orang_tua' ada
@@ -98,8 +98,12 @@ class ParentManagementController extends Controller
             $rules['user_id'] = [
                 'required',
                 'exists:users,id',
-                Rule::unique('student_parents')->where(fn ($query) => $query->where('user_id', $request->user_id))
-            ]; // Pastikan user_id unik di tabel student_parents
+                Rule::unique('parents')->where(fn ($query) => // Perbaiki: gunakan 'parents'
+                    $query->where('user_id', $request->user_id)
+                )
+            ];
+            // Hapus aturan email_new_user jika ada, karena tidak relevan di sini
+            unset($rules['email_new_user']);
             $request->validate($rules);
 
             // Gunakan akun user yang sudah ada
@@ -108,14 +112,15 @@ class ParentManagementController extends Controller
             $userEmail = $user->email; // Ambil email dari user yang dipilih
 
             // Opsional: Perbarui role user yang dipilih menjadi orang_tua jika belum
-            if ($user->role_id !== Role::where('name', 'orang_tua')->value('id')) {
-                $user->update(['role_id' => Role::where('name', 'orang_tua')->value('id')]);
+            // Pastikan role 'orang_tua' ada di tabel roles Anda
+            $roleOrangTuaId = Role::where('name', 'orang_tua')->value('id');
+            if ($user->role_id !== $roleOrangTuaId) {
+                $user->update(['role_id' => $roleOrangTuaId]);
             }
         } else {
             // Ini seharusnya tidak terjadi jika validasi user_id_option benar
             return back()->withErrors(['user_id_option' => 'Opsi akun pengguna tidak valid.'])->withInput();
         }
-
 
         // Buat data StudentParent
         $parent = StudentParent::create([
@@ -132,16 +137,19 @@ class ParentManagementController extends Controller
 
         // Buat wallet baru untuk user yang terhubung dengan orang tua
         // Pastikan setiap user punya wallet. Kalau user sudah ada, cek apakah sudah punya wallet.
-        if (!$user->wallet) { // Asumsi relasi wallet() di model User
+        if ($user && !$user->wallet) { // Pastikan $user ada dan belum memiliki wallet
             Wallet::create([
                 'user_id' => $user->id,
                 'balance' => 0,
+                'owner_id' => $parent->id, // Tambahkan owner_id dan owner_type untuk relasi polimorfik
+                'owner_type' => StudentParent::class,
             ]);
         }
 
 
         return redirect()->route('core.parents.index')->with('success', 'Orang tua berhasil ditambahkan.');
     }
+
 
     public function show(StudentParent $parent)
     {

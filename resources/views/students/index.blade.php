@@ -188,6 +188,7 @@
                                         data-student-address="{{ $student->address ?? 'N/A' }}"
                                         data-student-phone="{{ $student->phone_number ?? 'N/A' }}"
                                         data-student-status="{{ ucfirst($student->student_status) }}"
+                                        data-student-photo="{{ $student->photo ? asset('storage/' . $student->photo) : '' }}" {{-- TAMBAHKAN BARIS INI --}}
                                         title="Lihat Detail Siswa">
                                     <i class="fas fa-eye w-4 h-4"></i>
                                 </button>
@@ -197,7 +198,7 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.232z"></path></svg>
                                 </a>
                                 <form action="{{ route('core.students.destroy', $student->id) }}" method="POST" class="inline"
-                                      onsubmit="return confirm('Yakin ingin menghapus data siswa ini? Tindakan ini tidak dapat dibatalkan.')">
+                                            onsubmit="return confirm('Yakin ingin menghapus data siswa ini? Tindakan ini tidak dapat dibatalkan.')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" title="Hapus Siswa"
@@ -271,6 +272,12 @@
         </div>
 
         <div class="text-gray-700 space-y-3">
+            {{-- Placeholder Foto Siswa --}}
+            <div id="detailPhotoContainer" class="mt-4 mb-4 hidden">
+                <p class="text-gray-500">Foto</p>
+                <img id="detailPhoto" src="" class="w-32 h-32 object-cover rounded-lg shadow-md" alt="Foto Siswa">
+            </div>
+
             <p><strong>Nama Lengkap:</strong> <span id="detailName"></span></p>
             <p><strong>NIS:</strong> <span id="detailNis"></span></p>
             <p><strong>NISN:</strong> <span id="detailNisn"></span></p>
@@ -339,6 +346,8 @@
         const detailBirthPlace = document.getElementById('detailBirthPlace');
         const detailAddress = document.getElementById('detailAddress');
         const detailPhone = document.getElementById('detailPhone');
+        const detailPhotoContainer = document.getElementById('detailPhotoContainer');
+        const detailPhoto = document.getElementById('detailPhoto');
         const detailModalContent = studentDetailModal.querySelector('.transform');
 
         document.querySelectorAll('.view-detail-btn').forEach(button => {
@@ -359,6 +368,15 @@
                 detailAddress.textContent = this.dataset.studentAddress;
                 detailPhone.textContent = this.dataset.studentPhone;
 
+                // Logika untuk menampilkan foto
+                const studentPhotoUrl = this.dataset.studentPhoto;
+                if (studentPhotoUrl) {
+                    detailPhoto.src = studentPhotoUrl;
+                    detailPhotoContainer.classList.remove('hidden');
+                } else {
+                    detailPhoto.src = ''; // Bersihkan src jika tidak ada foto
+                    detailPhotoContainer.classList.add('hidden');
+                }
 
                 studentDetailModal.classList.remove('hidden');
                 setTimeout(() => {

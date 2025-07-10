@@ -40,7 +40,7 @@
         <div>
             <label for="name" class="block text-sm font-semibold text-gray-800 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
             <input type="text" name="name" id="name" value="{{ old('name', $parent->name) }}"
-                   class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
+                   class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
                    placeholder="Misal: Bapak Budi Santoso" required autofocus>
             @error('name')
                 <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
@@ -52,7 +52,7 @@
             <div>
                 <label for="gender" class="block text-sm font-semibold text-gray-800 mb-1">Jenis Kelamin</label>
                 <select name="gender" id="gender"
-                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
+                        class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
                     <option value="">— Pilih —</option>
                     <option value="L" {{ old('gender', $parent->gender) == 'L' ? 'selected' : '' }}>Laki-laki</option>
                     <option value="P" {{ old('gender', $parent->gender) == 'P' ? 'selected' : '' }}>Perempuan</option>
@@ -65,7 +65,7 @@
             <div>
                 <label for="relationship" class="block text-sm font-semibold text-gray-800 mb-1">Hubungan</label>
                 <select name="relationship" id="relationship"
-                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
+                        class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
                     <option value="">— Pilih —</option>
                     <option value="ayah" {{ old('relationship', $parent->relationship) == 'ayah' ? 'selected' : '' }}>Ayah</option>
                     <option value="ibu" {{ old('relationship', $parent->relationship) == 'ibu' ? 'selected' : '' }}>Ibu</option>
@@ -82,7 +82,7 @@
             <div>
                 <label for="phone" class="block text-sm font-semibold text-gray-800 mb-1">Nomor HP <span class="text-red-500">*</span></label>
                 <input type="text" name="phone" id="phone" value="{{ old('phone', $parent->phone) }}"
-                       class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
+                       class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
                        placeholder="Misal: 081234567890" required>
                 @error('phone')
                     <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
@@ -92,7 +92,7 @@
             <div>
                 <label for="email" class="block text-sm font-semibold text-gray-800 mb-1">Email</label>
                 <input type="email" name="email" id="email" value="{{ old('email', $parent->email) }}"
-                       class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
+                       class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
                        placeholder="email@example.com">
                 @error('email')
                     <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
@@ -104,7 +104,7 @@
         <div>
             <label for="address" class="block text-sm font-semibold text-gray-800 mb-1">Alamat</label>
             <textarea name="address" id="address" rows="3"
-                      class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
+                      class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
                       placeholder="Alamat lengkap">{{ old('address', $parent->address) }}</textarea>
             @error('address')
                 <p class="text-sm text-red-600 mt-1">{{ $message }}</p>

@@ -39,7 +39,7 @@
         <div>
             <label for="name" class="block text-sm font-semibold text-gray-800 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
             <input type="text" name="name" id="name" value="{{ old('name') }}"
-                   class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
+                   class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
                    placeholder="Misal: Bapak Budi Santoso" required autofocus>
             @error('name')
                 <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
@@ -51,7 +51,7 @@
             <div>
                 <label for="gender" class="block text-sm font-semibold text-gray-800 mb-1">Jenis Kelamin</label>
                 <select name="gender" id="gender"
-                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
+                        class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
                     <option value="">— Pilih —</option>
                     <option value="L" {{ old('gender') == 'L' ? 'selected' : '' }}>Laki-laki</option>
                     <option value="P" {{ old('gender') == 'P' ? 'selected' : '' }}>Perempuan</option>
@@ -64,7 +64,7 @@
             <div>
                 <label for="relationship" class="block text-sm font-semibold text-gray-800 mb-1">Hubungan</label>
                 <select name="relationship" id="relationship"
-                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
+                        class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
                     <option value="">— Pilih —</option>
                     <option value="ayah" {{ old('relationship') == 'ayah' ? 'selected' : '' }}>Ayah</option>
                     <option value="ibu" {{ old('relationship') == 'ibu' ? 'selected' : '' }}>Ibu</option>
@@ -81,7 +81,7 @@
             <div>
                 <label for="phone" class="block text-sm font-semibold text-gray-800 mb-1">Nomor HP <span class="text-red-500">*</span></label>
                 <input type="text" name="phone" id="phone" value="{{ old('phone') }}"
-                       class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
+                       class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
                        placeholder="Misal: 081234567890" required>
                 @error('phone')
                     <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
@@ -91,7 +91,7 @@
             <div>
                 <label for="email" class="block text-sm font-semibold text-gray-800 mb-1">Email (opsional)</label>
                 <input type="email" name="email" id="email" value="{{ old('email') }}"
-                       class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
+                       class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
                        placeholder="email@example.com">
                 @error('email')
                     <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
@@ -103,7 +103,7 @@
         <div>
             <label for="address" class="block text-sm font-semibold text-gray-800 mb-1">Alamat</label>
             <textarea name="address" id="address" rows="3"
-                      class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
+                      class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
                       placeholder="Alamat lengkap">{{ old('address') }}</textarea>
             @error('address')
                 <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
@@ -119,7 +119,7 @@
 
             <div class="mb-4">
                 <label for="user_id_option" class="block text-sm font-semibold text-gray-800 mb-1">Opsi Akun Pengguna</label>
-                <select name="user_id_option" id="user_id_option" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
+                <select name="user_id_option" id="user_id_option" class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
                     <option value="create_new" {{ old('user_id_option') == 'create_new' ? 'selected' : '' }}>Buat Akun Baru Otomatis</option>
                     <option value="select_existing" {{ old('user_id_option') == 'select_existing' ? 'selected' : '' }}>Pilih Akun yang Sudah Ada</option>
                 </select>
@@ -127,10 +127,10 @@
 
             <div id="existing_user_section" class="{{ old('user_id_option') == 'select_existing' ? '' : 'hidden' }} mt-4">
                 <label for="user_search" class="block text-sm font-semibold text-gray-800 mb-1">Cari Pengguna Berdasarkan Nama/Email</label>
-                <input type="text" id="user_search" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200" placeholder="Ketik nama atau email pengguna...">
+                <input type="text" id="user_search" class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200" placeholder="Ketik nama atau email pengguna...">
 
                 <label for="user_id" class="block text-sm font-semibold text-gray-800 mt-4 mb-1">Pilih Pengguna</label>
-                <select name="user_id" id="user_id" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
+                <select name="user_id" id="user_id" class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
                     <option value="">— Pilih Akun Pengguna —</option>
                     {{-- Options will be dynamically loaded/filtered by JS --}}
                     @foreach ($availableUsers as $user)
@@ -142,6 +142,13 @@
                 @error('user_id')
                     <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                 @enderror
+            </div>
+            <div id="new_user_email_section" class="{{ old('user_id_option') == 'create_new' ? '' : 'hidden' }} mt-4">
+                 <label for="email_new_user" class="block text-sm font-semibold text-gray-800 mb-1">Email Akun Baru <span class="text-red-500">*</span></label>
+                 <input type="email" name="email_new_user" id="email_new_user" value="{{ old('email_new_user') }}"
+                         class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
+                         placeholder="email.orangtua@example.com">
+                 @error('email_new_user') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
             </div>
         </div>
         {{-- END USER ACCOUNT SECTION --}}
@@ -162,58 +169,80 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // --- Token Acquisition (from layouts/app.blade.php) ---
+        const bearerToken = localStorage.getItem('sanctum_api_token');
+
+        if (!bearerToken) {
+            console.warn('Sanctum API Token not found in localStorage. API requests may fail.');
+        }
+
+        // --- User Account Section Logic ---
         const userIdOption = document.getElementById('user_id_option');
         const existingUserSection = document.getElementById('existing_user_section');
+        const newUserEmailSection = document.getElementById('new_user_email_section');
         const userSearchInput = document.getElementById('user_search');
         const userIdSelect = document.getElementById('user_id');
         let availableUsersCache = []; // Cache for all available users
 
-        // Function to toggle visibility of existing user section
         function toggleUserSection() {
+            const emailNewUserInput = document.getElementById('email_new_user'); // Get this element here
+
             if (userIdOption.value === 'select_existing') {
                 existingUserSection.classList.remove('hidden');
-                // Ensure options are loaded/filtered when section becomes visible
+                newUserEmailSection.classList.add('hidden');
+                if (emailNewUserInput) {
+                    emailNewUserInput.removeAttribute('required');
+                }
+                userIdSelect.setAttribute('required', 'required'); // Make user_id required
+
                 if (availableUsersCache.length === 0) {
                     fetchAvailableUsers(); // Fetch if not already cached
                 } else {
                     filterUserOptions(); // Filter from cache
                 }
-            } else {
+            } else { // create_new
                 existingUserSection.classList.add('hidden');
+                newUserEmailSection.classList.remove('hidden');
+                if (emailNewUserInput) {
+                    emailNewUserInput.setAttribute('required', 'required');
+                }
+                userIdSelect.removeAttribute('required'); // Make user_id NOT required
+
                 userSearchInput.value = ''; // Clear search when hiding
                 userIdSelect.innerHTML = '<option value="">— Pilih Akun Pengguna —</option>'; // Clear options
             }
         }
 
-        // Function to fetch available users from API
         async function fetchAvailableUsers() {
-            // Optional: Show loading indicator
             userIdSelect.innerHTML = '<option value="">Memuat pengguna...</option>';
             userSearchInput.disabled = true;
 
             try {
-                // Adjust this route to your actual API route for searching users
-                const response = await fetch('/api/available-users-for-parent', {
+                if (!bearerToken) {
+                    throw new Error("Token autentikasi tidak tersedia untuk permintaan API.");
+                }
+                const response = await fetch('/api/available-users-for-student', {
                     headers: {
                         'Accept': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Authorization': `Bearer ${bearerToken}` // Gunakan token dari localStorage
                     }
                 });
                 if (!response.ok) {
-                    throw new Error('Gagal memuat pengguna yang tersedia.');
+                    const errorBody = await response.json();
+                    throw new Error(`Gagal memuat pengguna: ${errorBody.message || response.statusText}`);
                 }
                 availableUsersCache = await response.json();
-                renderUserOptions(availableUsersCache); // Render initial options
-            } catch (error) {
-                console.error('Error fetching available users:', error);
-                userIdSelect.innerHTML = '<option value="">Gagal memuat. Coba lagi.</option>';
+                renderUserOptions(availableUsersCache);
+            } catch (err) {
+                console.error('Error fetching available users:', err.message);
+                userIdSelect.innerHTML = `<option value="">${err.message}. Coba lagi.</option>`;
             } finally {
                 userSearchInput.disabled = false;
             }
         }
 
-        // Function to filter user options based on search input
         function filterUserOptions() {
             const searchTerm = userSearchInput.value.toLowerCase();
             const filteredOptions = availableUsersCache.filter(user => {
@@ -224,7 +253,6 @@
             renderUserOptions(filteredOptions);
         }
 
-        // Function to render options into the select dropdown
         function renderUserOptions(usersToRender) {
             userIdSelect.innerHTML = '<option value="">— Pilih Akun Pengguna —</option>'; // Clear current options
             usersToRender.forEach(user => {

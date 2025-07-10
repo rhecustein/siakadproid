@@ -17,6 +17,7 @@ return new class extends Migration
 
             $table->string('owner_type'); // morph: class name
             $table->unsignedBigInteger('owner_id'); // morph: entity id (bisa student/parent)
+            $table->unsignedBigInteger('user_id')->nullable();
             
             $table->decimal('balance', 12, 2)->default(0);
             $table->enum('status', ['active', 'suspended', 'closed'])->default('active');

@@ -90,22 +90,22 @@
 
     <form method="GET" action="{{ route('core.parents.index') }}" class="mt-6 grid grid-cols-1 md:grid-cols-5 gap-4 bg-white p-4 rounded-xl shadow">
         <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, email, atau no HP"
-            class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4">
+            class="w-full border-2 border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4">
 
-        <select name="gender" class="w-full border-gray-300 rounded-lg shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white">
+        <select name="gender" class="w-full border-2 border-gray-300 rounded-lg shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white">
             <option value="">Semua Gender</option>
             <option value="L" {{ request('gender') == 'L' ? 'selected' : '' }}>Laki-laki</option>
             <option value="P" {{ request('gender') == 'P' ? 'selected' : '' }}>Perempuan</option>
         </select>
 
-        <select name="relationship" class="w-full border-gray-300 rounded-lg shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white">
+        <select name="relationship" class="w-full border-2 border-gray-300 rounded-lg shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white">
             <option value="">Semua Hubungan</option>
             <option value="ayah" {{ request('relationship') == 'ayah' ? 'selected' : '' }}>Ayah</option>
             <option value="ibu" {{ request('relationship') == 'ibu' ? 'selected' : '' }}>Ibu</option>
             <option value="wali" {{ request('relationship') == 'wali' ? 'selected' : '' }}>Wali</option>
         </select>
 
-        <select name="status" class="w-full border-gray-300 rounded-lg shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white">
+        <select name="status" class="w-full border-2 border-gray-300 rounded-lg shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white">
             <option value="">Semua Status</option>
             <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Aktif</option>
             <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
@@ -167,7 +167,7 @@
                                         data-parent-email="{{ $parent->email ?? 'N/A' }}"
                                         data-parent-phone="{{ $parent->phone ?? 'N/A' }}"
                                         data-parent-address="{{ $parent->address ?? 'N/A' }}"
-                                        data-parent-latest-topup="{{ number_format($parent->wallet?->latestTopupAmount() ?? 0, 0, ',', '.') }}" {{-- Safe access for latestTopupAmount --}}
+                                        data-parent-latest-topup="{{ number_format($parent->wallet?->latestTopupAmount ?? 0, 0, ',', '.') }}" {{-- Safe access for latestTopupAmount --}}
                                         data-parent-wallet-balance="Rp {{ number_format($parent->wallet->balance ?? 0, 0, ',', '.') }}"
                                         data-parent-active-children="{{ $parent->children->where('is_active', true)->count() }}"
                                         data-parent-status="{{ $parent->is_active ? 'Aktif' : 'Nonaktif' }}"
@@ -180,7 +180,7 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.232z"></path></svg>
                                 </a>
                                 <form action="{{ route('core.parents.destroy', $parent->id) }}" method="POST" class="inline"
-                                      onsubmit="return confirm('Yakin ingin menghapus data orang tua ini? Tindakan ini tidak dapat dibatalkan.')">
+                                            onsubmit="return confirm('Yakin ingin menghapus data orang tua ini? Tindakan ini tidak dapat dibatalkan.')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" title="Hapus Orang Tua"

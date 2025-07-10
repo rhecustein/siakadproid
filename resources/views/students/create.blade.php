@@ -43,14 +43,14 @@
             <div>
                 <label for="name" class="block text-sm font-semibold text-gray-800 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
                 <input type="text" name="name" id="name" value="{{ old('name') }}"
-                       class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
-                       placeholder="Misal: Ahmad Fauzi" required autofocus>
+                        class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
+                        placeholder="Misal: Ahmad Fauzi" required autofocus>
                 @error('name') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label for="gender" class="block text-sm font-semibold text-gray-800 mb-1">Jenis Kelamin</label>
                 <select name="gender" id="gender"
-                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
+                        class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
                     <option value="">— Pilih —</option>
                     <option value="L" {{ old('gender') == 'L' ? 'selected' : '' }}>Laki-laki</option>
                     <option value="P" {{ old('gender') == 'P' ? 'selected' : '' }}>Perempuan</option>
@@ -63,22 +63,22 @@
             <div>
                 <label for="nis" class="block text-sm font-semibold text-gray-800 mb-1">NIS (Nomor Induk Siswa)</label>
                 <input type="text" name="nis" id="nis" value="{{ old('nis') }}"
-                       class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
-                       placeholder="Misal: 20240001">
+                        class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
+                        placeholder="Misal: 20240001">
                 @error('nis') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label for="nisn" class="block text-sm font-semibold text-gray-800 mb-1">NISN (Nomor Induk Siswa Nasional)</label>
                 <input type="text" name="nisn" id="nisn" value="{{ old('nisn') }}"
-                       class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
-                       placeholder="Misal: 0081234567">
+                        class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
+                        placeholder="Misal: 0081234567">
                 @error('nisn') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label for="phone_number" class="block text-sm font-semibold text-gray-800 mb-1">Nomor HP Siswa (Opsional)</label>
                 <input type="text" name="phone_number" id="phone_number" value="{{ old('phone_number') }}"
-                       class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
-                       placeholder="Misal: 0812xxxxxx">
+                        class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
+                        placeholder="Misal: 0812xxxxxx">
                 @error('phone_number') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
             </div>
         </div>
@@ -87,21 +87,21 @@
             <div>
                 <label for="place_of_birth" class="block text-sm font-semibold text-gray-800 mb-1">Tempat Lahir</label>
                 <input type="text" name="place_of_birth" id="place_of_birth" value="{{ old('place_of_birth') }}"
-                       class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
-                       placeholder="Misal: Jakarta">
+                        class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
+                        placeholder="Misal: Jakarta">
                 @error('place_of_birth') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label for="date_of_birth" class="block text-sm font-semibold text-gray-800 mb-1">Tanggal Lahir</label>
                 <input type="date" name="date_of_birth" id="date_of_birth" value="{{ old('date_of_birth') }}"
-                       class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200">
+                        class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200">
                 @error('date_of_birth') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label for="religion" class="block text-sm font-semibold text-gray-800 mb-1">Agama</label>
                 <input type="text" name="religion" id="religion" value="{{ old('religion') }}"
-                       class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
-                       placeholder="Misal: Islam">
+                        class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
+                        placeholder="Misal: Islam">
                 @error('religion') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
             </div>
         </div>
@@ -109,7 +109,7 @@
         <div>
             <label for="address" class="block text-sm font-semibold text-gray-800 mb-1">Alamat Lengkap</label>
             <textarea name="address" id="address" rows="3"
-                      class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
+                      class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
                       placeholder="Alamat lengkap siswa">{{ old('address') }}</textarea>
             @error('address') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
         </div>
@@ -122,7 +122,7 @@
             <div>
                 <label for="school_id" class="block text-sm font-semibold text-gray-800 mb-1">Sekolah <span class="text-red-500">*</span></label>
                 <select name="school_id" id="school_id" required
-                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
+                        class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
                     <option value="">— Pilih Sekolah —</option>
                     @foreach ($schools as $school)
                         <option value="{{ $school->id }}" {{ old('school_id') == $school->id ? 'selected' : '' }}>
@@ -135,7 +135,7 @@
             <div>
                 <label for="grade_id" class="block text-sm font-semibold text-gray-800 mb-1">Kelas <span class="text-red-500">*</span></label>
                 <select name="grade_id" id="grade_id" required
-                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
+                        class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
                     <option value="">— Pilih Kelas —</option>
                     @foreach ($grades as $grade)
                         <option value="{{ $grade->id }}" {{ old('grade_id') == $grade->id ? 'selected' : '' }}>
@@ -151,13 +151,13 @@
             <div>
                 <label for="admission_date" class="block text-sm font-semibold text-gray-800 mb-1">Tanggal Masuk</label>
                 <input type="date" name="admission_date" id="admission_date" value="{{ old('admission_date') }}"
-                       class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200">
+                        class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200">
                 @error('admission_date') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label for="student_status" class="block text-sm font-semibold text-gray-800 mb-1">Status Siswa <span class="text-red-500">*</span></label>
                 <select name="student_status" id="student_status" required
-                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
+                        class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
                     <option value="">— Pilih Status —</option>
                     <option value="aktif" {{ old('student_status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
                     <option value="nonaktif" {{ old('student_status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
@@ -180,7 +180,7 @@
 
             <div class="mb-4">
                 <label for="user_id_option" class="block text-sm font-semibold text-gray-800 mb-1">Opsi Akun Pengguna</label>
-                <select name="user_id_option" id="user_id_option" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
+                <select name="user_id_option" id="user_id_option" class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
                     <option value="create_new" {{ old('user_id_option') == 'create_new' ? 'selected' : '' }}>Buat Akun Baru Otomatis</option>
                     <option value="select_existing" {{ old('user_id_option') == 'select_existing' ? 'selected' : '' }}>Pilih Akun yang Sudah Ada</option>
                 </select>
@@ -189,10 +189,10 @@
 
             <div id="existing_user_section" class="{{ old('user_id_option') == 'select_existing' ? '' : 'hidden' }} mt-4">
                 <label for="user_search" class="block text-sm font-semibold text-gray-800 mb-1">Cari Pengguna Berdasarkan Nama/Email</label>
-                <input type="text" id="user_search" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200" placeholder="Ketik nama atau email pengguna...">
+                <input type="text" id="user_search" class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200" placeholder="Ketik nama atau email pengguna...">
 
                 <label for="user_id" class="block text-sm font-semibold text-gray-800 mt-4 mb-1">Pilih Pengguna</label>
-                <select name="user_id" id="user_id" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
+                <select name="user_id" id="user_id" class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
                     <option value="">— Pilih Akun Pengguna —</option>
                     {{-- Options will be dynamically loaded/filtered by JS --}}
                     @foreach ($availableUsers as $user)
@@ -206,8 +206,8 @@
             <div id="new_user_email_section" class="{{ old('user_id_option') == 'create_new' ? '' : 'hidden' }} mt-4">
                  <label for="email_new_user" class="block text-sm font-semibold text-gray-800 mb-1">Email Akun Baru <span class="text-red-500">*</span></label>
                  <input type="email" name="email_new_user" id="email_new_user" value="{{ old('email_new_user') }}"
-                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
-                        placeholder="email.siswa@example.com">
+                         class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
+                         placeholder="email.siswa@example.com">
                  @error('email_new_user') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
             </div>
         </div>
@@ -219,9 +219,9 @@
             <p class="text-sm text-gray-700 mb-4">Pilih orang tua atau wali utama siswa ini dari daftar yang sudah ada.</p>
             <div>
                 <label for="parent_search" class="block text-sm font-semibold text-gray-800 mb-1">Cari Orang Tua / Wali</label>
-                <input type="text" id="parent_search" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200" placeholder="Ketik nama orang tua...">
+                <input type="text" id="parent_search" class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200" placeholder="Ketik nama orang tua...">
                 <select name="parent_id" id="parent_id"
-                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
+                        class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm text-sm py-2.5 px-4 pr-8 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white">
                     <option value="">— Pilih Orang Tua —</option>
                     @foreach ($parents as $parent)
                         <option value="{{ $parent->id }}" data-name="{{ strtolower($parent->name) }}" data-relationship="{{ strtolower($parent->relationship) }}" {{ old('parent_id') == $parent->id ? 'selected' : '' }}>
@@ -240,7 +240,7 @@
         <div>
             <label for="notes" class="block text-sm font-semibold text-gray-800 mb-1">Catatan Tambahan</label>
             <textarea name="notes" id="notes" rows="3"
-                      class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
+                      class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm py-2.5 px-4 transition-all duration-200"
                       placeholder="Catatan khusus (jika ada)">{{ old('notes') }}</textarea>
             @error('notes') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
         </div>
@@ -270,10 +270,6 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // --- Token Acquisition (from layouts/app.blade.php) ---
-        // This script runs in the child view, but the token is flashed to session
-        // and picked up by a script in layouts/app.blade.php which then stores it in localStorage.
-        // So, we simply retrieve it from localStorage here.
         const bearerToken = localStorage.getItem('sanctum_api_token');
 
         if (!bearerToken) {

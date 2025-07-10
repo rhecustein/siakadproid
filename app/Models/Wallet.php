@@ -19,6 +19,8 @@ class Wallet extends Model
         'status',
         'notes',
         'created_by',
+        // Pastikan 'user_id' ada di sini jika Anda menggunakannya untuk relasi langsung ke User
+        'user_id', // Tambahkan ini jika belum ada dan ada kolom user_id di tabel wallets
     ];
 
     protected $casts = [
@@ -66,4 +68,18 @@ class Wallet extends Model
         return $this->belongsTo(Student::class);
     }
 
+    /**
+     * Get the latest top-up amount for the wallet.
+     * This is an accessor, so you can call $wallet->latest_topup_amount.
+     */
+    public function getLatestTopupAmountAttribute()
+    {
+        // Perbaiki: Gunakan 'transaction_type' sebagai nama kolom yang benar
+        $latestTopup = $this->transactions()
+                            ->where('transaction_type', 'topup') // Perbaikan ada di baris ini
+                            ->latest()
+                            ->first();
+
+        return $latestTopup ? $latestTopup->amount : 0;
+    }
 }
